@@ -49,7 +49,8 @@ class Slider {
     canvas,
     container,
     containerY,
-    containerHeight
+    containerHeight,
+    mainScreen
   ) {
     this.x = x;
     this.y = y;
@@ -60,13 +61,14 @@ class Slider {
     this.container = container;
     this.containerY = containerY;
     this.containerHeight = containerHeight;
+    this.mainScreen = mainScreen;
     this.dragging = false;
   }
 
   draw() {
     const rectangle = new Path2D();
     rectangle.rect(this.x, this.y, this.width, this.height);
-    this.center = this.y + this.height / 2;
+    this.center = this.y - this.containerY + this.height / 2;
     this.hue = (this.center / this.containerHeight) * 360;
     this.ctx.fillStyle = "hsl(" + this.hue + ",100%,50%)";
     this.ctx.fill(rectangle);
@@ -104,6 +106,7 @@ class Slider {
   }
 
   finishDrag() {
+    this.mainScreen.update(this.hue);
     this.dragging = false;
   }
 }
@@ -128,7 +131,7 @@ class HueBar {
       y += 1;
     }
   }
-  addSlider() {
+  addSlider(mainScreen) {
     this.slider = new Slider(
       this.x - 4.5,
       this.y - 4.5,
@@ -138,9 +141,45 @@ class HueBar {
       this.canvas,
       this,
       this.y,
-      this.height
+      this.height,
+      mainScreen
     );
     this.slider.draw();
+  }
+}
+
+class MainScreen {
+  constructor(x, y, width, height, h, ctx) {
+    this.startx = x;
+    this.starty = y;
+    this.width = width;
+    this.height = height;
+    this.hue = h;
+    this.ctx = ctx;
+  }
+  draw() {
+    let s = 0;
+    let v = 100;
+    const addS = 100 / this.width;
+    const minusV = 100 / this.height;
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        const pixel = new Path2D();
+        pixel.rect(x + this.startx, y + this.starty, 1, 1);
+        const rgb = hsvToRgb(this.hue, s, v);
+        this.ctx.fillStyle =
+          "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+        this.ctx.fill(pixel);
+        s += addS;
+      }
+      s = 0;
+      v -= minusV;
+    }
+  }
+  update(h) {
+    this.hue = h;
+    this.ctx.clearRect(this.startx, this.starty, this.width, this.height);
+    this.draw();
   }
 }
 
@@ -155,28 +194,6 @@ class ColorPicker {
     this.height = height;
     this.components = components;
     this.calculateSizes();
-  }
-
-  addMainScreen(x, y, width, height, h) {
-    const startx = x;
-    const starty = y;
-    let s = 0;
-    let v = 100;
-    const addS = 100 / width;
-    const minusV = 100 / height;
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const pixel = new Path2D();
-        pixel.rect(x + startx, y + starty, 1, 1);
-        const rgb = hsvToRgb(h, s, v);
-        this.ctx.fillStyle =
-          "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
-        this.ctx.fill(pixel);
-        s += addS;
-      }
-      s = 0;
-      v -= minusV;
-    }
   }
 
   addTransparencyBar(x, y, width, height) {
@@ -205,6 +222,7 @@ class ColorPicker {
       );
       this.startx += this.width / 10 + this.padding;
     }
+
     if (this.components.includes("hueBar")) {
       this.hueBar = new HueBar(
         this.startx,
@@ -215,17 +233,23 @@ class ColorPicker {
         this.canvas
       );
       this.hueBar.draw();
-      this.hueBar.addSlider();
       this.startx += this.width / 10 + this.padding;
     }
+
     if (this.components.includes("mainScreen")) {
-      this.addMainScreen(
+      this.mainScreen = new MainScreen(
         this.startx,
         this.starty,
         this.width - this.startx - this.padding,
         this.height - 20,
-        0
+        0,
+        this.ctx
       );
+      this.mainScreen.draw();
+    }
+
+    if (this.components.includes("hueBar")) {
+      this.hueBar.addSlider(this.mainScreen);
     }
   }
 }
