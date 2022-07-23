@@ -1,2 +1,5 @@
-# color-picker
-JavaScript and HTML color picker
+# Color Picker
+
+JavaScript color picker.
+
+Recommended minimum width/height = 100
