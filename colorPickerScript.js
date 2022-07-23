@@ -305,6 +305,11 @@ class HueBar extends Bars {
 
 class TransparencyBar extends Bars {
   draw() {
+    // Background set to black - maybe change to transparency grid? Note: will also need to change for transparency slider
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle = "#000000";
+    this.ctx.fill(rectangle);
     let t = 255;
     let y = this.y;
     const minusT = 255 / this.height;
@@ -463,13 +468,17 @@ class ColorPicker {
       this.componentWidth =
         this.componentHeight + this.width / 5 + this.padding * 2;
       this.dataStartY = this.starty;
-      this.dataStartX = this.componentWidth + this.padding * 2;
+      this.dataStartX = this.componentWidth;
+      this.dataWidth = this.width - this.componentWidth - this.padding;
+      this.dataHeight = this.componentHeight;
     } else {
       this.componentWidth = this.width;
       this.componentHeight =
         this.componentWidth - this.width / 5 - this.padding * 2;
       this.dataStartY = this.componentHeight + this.padding * 2;
       this.dataStartX = this.startx;
+      this.dataWidth = this.componentWidth - this.padding * 2;
+      this.dataHeight = this.height - this.componentHeight - this.padding * 3;
     }
     if (this.components.includes("transparencyBar")) {
       this.transparencyBar = new TransparencyBar(
@@ -522,8 +531,8 @@ class ColorPicker {
       this.colorBar = new ColorBar(
         this.dataStartX,
         this.dataStartY,
-        20,
-        20,
+        this.dataWidth,
+        this.dataHeight,
         this.ctx,
         this.mainScreen.colorPointer.rgb,
         this.mainScreen.colorPointer
