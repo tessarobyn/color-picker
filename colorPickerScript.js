@@ -423,7 +423,7 @@ class MainScreen {
   }
 }
 
-class ColorBar {
+class ColorData {
   constructor(x, y, width, height, ctx, rgb, colorPointer) {
     this.x = x;
     this.y = y;
@@ -433,11 +433,39 @@ class ColorBar {
     this.rgb = rgb;
     this.colorPointer = colorPointer;
   }
+
+  drawText(text) {
+    this.fontSize = 16;
+    this.ctx.font = this.fontSize + "px arial";
+    const textObj = this.ctx.measureText(text);
+    const textWidth = textObj.width;
+    const textX = this.x + (this.width / 2 - textWidth / 2);
+    const textY = this.y + (this.height / 2 + this.fontSize / 3);
+    this.ctx.fillStyle = "#ffffff";
+    this.ctx.fillText(text, textX, textY);
+  }
+}
+
+class ColorBar extends ColorData {
   draw() {
     const rectangle = new Path2D();
     rectangle.rect(this.x, this.y, this.width, this.height);
     this.ctx.fillStyle =
       "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
+    this.ctx.fill(rectangle);
+  }
+
+  update() {
+    this.rgb = this.colorPointer.rgb;
+    this.draw();
+  }
+}
+
+class ColorDataBox extends ColorData {
+  draw() {
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle = "rgba(125,125,125,.3)";
     this.ctx.fill(rectangle);
   }
   update() {
@@ -532,18 +560,43 @@ class ColorPicker {
         this.dataStartX,
         this.dataStartY,
         this.dataWidth,
-        this.dataHeight,
+        (this.dataHeight - this.padding * 3) / 4,
         this.ctx,
         this.mainScreen.colorPointer.rgb,
         this.mainScreen.colorPointer
       );
       this.colorBar.draw();
+      this.dataStartY +=
+        (this.dataHeight - this.padding * 3) / 4 + this.padding;
+    }
+    if (this.components.includes("hex")) {
+      this.hexDataBox = new ColorDataBox(
+        this.dataStartX,
+        this.dataStartY,
+        this.dataWidth,
+        (this.dataHeight - this.padding * 3) / 4,
+        this.ctx,
+        this.mainScreen.colorPointer.rgb,
+        this.mainScreen.colorPointer
+      );
+      this.hexDataBox.draw();
+      this.hexDataBox.drawText("#f0f0f0");
     }
   }
 }
 
 const canvas = document.getElementById("colorPicker");
-const components = ["transparencyBar", "hueBar", "mainScreen", "colorBar"];
+const components = [
+  "transparencyBar",
+  "hueBar",
+  "mainScreen",
+  "colorBar",
+  "hex",
+  "rgb",
+  "hsl",
+  "hsv",
+  "cmyk",
+];
 colorPicker = new ColorPicker(canvas, canvas.width, canvas.height, components);
 
 canvas.addEventListener("mousedown", (event) => {
