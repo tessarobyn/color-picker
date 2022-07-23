@@ -37,7 +37,23 @@ function mouseDown(event, canvas) {
   return [mouseX, mouseY];
 }
 
-class Slider {
+class DragComponents {
+  constructor() {}
+  drag(event) {
+    const mousePos = mouseDown(event, this.canvas);
+    if (this.x <= mousePos[0] && mousePos[0] <= this.x + this.width) {
+      if (this.y <= mousePos[1] && mousePos[1] <= this.y + this.height) {
+        this.dragging = true;
+      }
+    }
+  }
+
+  finishDrag() {
+    this.dragging = false;
+  }
+}
+
+class Slider extends DragComponents {
   constructor(
     x,
     y,
@@ -50,6 +66,7 @@ class Slider {
     containerHeight,
     mainScreen
   ) {
+    super();
     this.x = x;
     this.y = y;
     this.width = width;
@@ -96,23 +113,9 @@ class Slider {
     }
     this.mainScreen.update(this.hue);
   }
-
-  drag(event) {
-    const mousePos = mouseDown(event, this.canvas);
-    if (this.x <= mousePos[0] && mousePos[0] <= this.x + this.width) {
-      if (this.y <= mousePos[1] && mousePos[1] <= this.y + this.height) {
-        this.dragging = true;
-        console.log("slider clicked");
-      }
-    }
-  }
-
-  finishDrag() {
-    this.dragging = false;
-  }
 }
 
-class ColorPointer {
+class ColorPointer extends DragComponents {
   constructor(
     width,
     height,
@@ -122,8 +125,10 @@ class ColorPointer {
     containerWidth,
     containerHeight,
     ctx,
+    canvas,
     hue
   ) {
+    super();
     this.width = width;
     this.height = height;
     this.x = containerX + containerWidth - width / 2;
@@ -135,38 +140,60 @@ class ColorPointer {
     this.containerY = containerY;
     this.containerWidth = containerWidth;
     this.containerHeight = containerHeight;
+    this.canvas = canvas;
     this.ctx = ctx;
     this.hue = hue;
+    this.saturation = 100;
+    this.value = 0;
+    this.dragging = false;
+    this.rgb = [];
   }
   draw() {
     const rectangle = new Path2D();
     rectangle.rect(this.x, this.y, this.width, this.height);
-    this.value = this.ctx.fillStyle = "hsl(" + this.hue + ",100%,50%)";
+    this.saturation =
+      ((this.centerX - this.containerX) / this.containerWidth) * 100;
+    this.value =
+      100 - ((this.centerY - this.containerY) / this.containerHeight) * 100;
+    this.rgb = hsvToRgb(this.hue, this.saturation, this.value);
+    this.ctx.fillStyle =
+      "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
     this.ctx.fill(rectangle);
-    this.ctx.strokeStyle = "#ffffff";
+    if (this.value > 70) {
+      this.ctx.strokeStyle = "#000000";
+    } else {
+      this.ctx.strokeStyle = "#ffffff";
+    }
     this.ctx.stroke(rectangle);
   }
   update(event) {
     this.ctx.clearRect(
-      this.x,
-      this.containerY - 5,
-      this.width + 1,
-      this.containerHeight + 10
+      this.containerX - this.width / 2 - 1,
+      this.containerY - this.height / 2 - 1,
+      this.containerWidth + this.width * 2,
+      this.containerHeight + this.height * 2
     );
     const pos = mouseDown(event, this.canvas);
-    this.y = pos[1] + 0.5;
-    this.center = this.y + this.height / 2;
-    if (this.center > this.containerY + this.containerHeight) {
+    this.x = pos[0] + 0.5 - this.width / 2;
+    this.y = pos[1] + 0.5 - this.height / 2;
+    this.centerX = this.x + this.width / 2;
+    if (this.centerX > this.containerX + this.containerWidth) {
+      this.x = this.containerX + this.containerWidth - this.width / 2;
+      this.centerX = this.x + this.width / 2;
+    } else if (this.centerX < this.containerX) {
+      this.x = this.containerX - this.width / 2;
+      this.centerX = this.x + this.width / 2;
+    }
+    this.centerY = this.y + this.height / 2;
+    if (this.centerY > this.containerY + this.containerHeight) {
       this.y = this.containerY + this.containerHeight - this.height / 2;
-    } else if (this.center < this.containerY) {
+      this.centerY = this.y + this.height / 2;
+    } else if (this.centerY < this.containerY) {
       this.y = this.containerY - this.height / 2;
+      this.centerY = this.y + this.height / 2;
     }
     this.container.draw();
     this.draw();
-    if (this.hue >= 360) {
-      this.hue = 359;
-    }
-    this.mainScreen.update(this.hue);
   }
 }
 
@@ -208,13 +235,14 @@ class HueBar {
 }
 
 class MainScreen {
-  constructor(x, y, width, height, h, ctx) {
+  constructor(x, y, width, height, h, ctx, canvas) {
     this.startx = x;
     this.starty = y;
     this.width = width;
     this.height = height;
     this.hue = h;
     this.ctx = ctx;
+    this.canvas = canvas;
   }
   draw() {
     // Low resolution = faster rendering speeds
@@ -273,6 +301,7 @@ class MainScreen {
       this.width,
       this.height,
       this.ctx,
+      this.canvas,
       this.hue
     );
     this.colorPointer.draw();
@@ -347,7 +376,8 @@ class ColorPicker {
         this.width - this.startx - this.padding,
         this.height - 20,
         0,
-        this.ctx
+        this.ctx,
+        this.canvas
       );
       this.mainScreen.draw();
       this.mainScreen.addColorPointer();
@@ -365,6 +395,7 @@ colorPicker = new ColorPicker(canvas, canvas.width, canvas.height, components);
 
 canvas.addEventListener("mousedown", (event) => {
   colorPicker.hueBar.slider.drag(event);
+  colorPicker.mainScreen.colorPointer.drag(event);
 });
 canvas.addEventListener("mousemove", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
@@ -372,10 +403,19 @@ canvas.addEventListener("mousemove", (event) => {
       colorPicker.hueBar.slider.update(event);
     });
   }
+  if (colorPicker.mainScreen.colorPointer.dragging) {
+    updatePointer = window.requestAnimationFrame(function () {
+      colorPicker.mainScreen.colorPointer.update(event);
+    });
+  }
 });
 window.addEventListener("mouseup", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
     window.cancelAnimationFrame(updateSlider);
     colorPicker.hueBar.slider.finishDrag();
+  }
+  if (colorPicker.mainScreen.colorPointer.dragging) {
+    window.cancelAnimationFrame(updatePointer);
+    colorPicker.mainScreen.colorPointer.finishDrag();
   }
 });
