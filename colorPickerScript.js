@@ -343,38 +343,47 @@ class ColorPicker {
   }
 
   calculateSizes() {
-    this.padding = 10;
+    this.padding = 15;
     this.startx = this.padding;
     this.starty = this.padding;
+    if (this.width > this.height) {
+      this.componentHeight = this.height - this.padding * 2;
+      this.componentWidth =
+        this.componentHeight + this.width / 5 + this.padding * 2;
+    } else {
+      this.componentWidth = this.width;
+      this.componentHeight =
+        this.componentWidth - this.width / 5 - this.padding * 2;
+    }
     if (this.components.includes("transparencyBar")) {
       this.addTransparencyBar(
         this.startx,
         this.starty,
-        this.width / 10,
-        this.height - 20
+        this.componentWidth / 10,
+        this.componentHeight
       );
-      this.startx += this.width / 10 + this.padding;
+      this.startx += this.componentWidth / 10 + this.padding;
     }
 
     if (this.components.includes("hueBar")) {
       this.hueBar = new HueBar(
         this.startx,
         this.starty,
-        this.width / 10,
-        this.height - 20,
+        this.componentWidth / 10,
+        this.componentHeight,
         this.ctx,
         this.canvas
       );
       this.hueBar.draw();
-      this.startx += this.width / 10 + this.padding;
+      this.startx += this.componentWidth / 10 + this.padding;
     }
 
     if (this.components.includes("mainScreen")) {
       this.mainScreen = new MainScreen(
         this.startx,
         this.starty,
-        this.width - this.startx - this.padding,
-        this.height - 20,
+        this.componentWidth - this.startx - this.padding,
+        this.componentHeight,
         0,
         this.ctx,
         this.canvas
