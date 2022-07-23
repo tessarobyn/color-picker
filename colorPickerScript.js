@@ -37,8 +37,6 @@ function mouseDown(event, canvas) {
   return [mouseX, mouseY];
 }
 
-function mouseUp(event) {}
-
 class Slider {
   constructor(
     x,
@@ -84,7 +82,7 @@ class Slider {
       this.containerHeight + 10
     );
     const pos = mouseDown(event, this.canvas);
-    this.y = pos[1];
+    this.y = pos[1] + 0.5;
     this.center = this.y + this.height / 2;
     if (this.center > this.containerY + this.containerHeight) {
       this.y = this.containerY + this.containerHeight - this.height / 2;
@@ -93,6 +91,10 @@ class Slider {
     }
     this.container.draw();
     this.draw();
+    if (this.hue >= 360) {
+      this.hue = 359;
+    }
+    this.mainScreen.update(this.hue);
   }
 
   drag(event) {
@@ -106,8 +108,65 @@ class Slider {
   }
 
   finishDrag() {
-    this.mainScreen.update(this.hue);
     this.dragging = false;
+  }
+}
+
+class ColorPointer {
+  constructor(
+    width,
+    height,
+    container,
+    containerX,
+    containerY,
+    containerWidth,
+    containerHeight,
+    ctx,
+    hue
+  ) {
+    this.width = width;
+    this.height = height;
+    this.x = containerX + containerWidth - width / 2;
+    this.y = containerY - height / 2;
+    this.centerX = this.x + width / 2;
+    this.centerY = this.y + height / 2;
+    this.container = container;
+    this.containerX = containerX;
+    this.containerY = containerY;
+    this.containerWidth = containerWidth;
+    this.containerHeight = containerHeight;
+    this.ctx = ctx;
+    this.hue = hue;
+  }
+  draw() {
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.value = this.ctx.fillStyle = "hsl(" + this.hue + ",100%,50%)";
+    this.ctx.fill(rectangle);
+    this.ctx.strokeStyle = "#ffffff";
+    this.ctx.stroke(rectangle);
+  }
+  update(event) {
+    this.ctx.clearRect(
+      this.x,
+      this.containerY - 5,
+      this.width + 1,
+      this.containerHeight + 10
+    );
+    const pos = mouseDown(event, this.canvas);
+    this.y = pos[1] + 0.5;
+    this.center = this.y + this.height / 2;
+    if (this.center > this.containerY + this.containerHeight) {
+      this.y = this.containerY + this.containerHeight - this.height / 2;
+    } else if (this.center < this.containerY) {
+      this.y = this.containerY - this.height / 2;
+    }
+    this.container.draw();
+    this.draw();
+    if (this.hue >= 360) {
+      this.hue = 359;
+    }
+    this.mainScreen.update(this.hue);
   }
 }
 
@@ -158,6 +217,34 @@ class MainScreen {
     this.ctx = ctx;
   }
   draw() {
+    // Low resolution = faster rendering speeds
+    // 100 x 100 colors
+    let s = 0;
+    let v = 100;
+    const sizeX = this.width / 100;
+    const sizeY = this.height / 100;
+    for (let y = 0; y < 100; y++) {
+      for (let x = 0; x < 100; x++) {
+        const pixel = new Path2D();
+        pixel.rect(
+          sizeX * x + this.startx - 1,
+          sizeY * y + this.starty - 1,
+          sizeX + 2,
+          sizeY + 2
+        );
+        const rgb = hsvToRgb(this.hue, s, v);
+        this.ctx.fillStyle =
+          "rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+        this.ctx.fill(pixel);
+        s++;
+      }
+      s = 0;
+      v--;
+    }
+  }
+  drawHighRes() {
+    // High resolution = slow rendering speeds
+    // 1 color = 1 pixel (width x height colors)
     let s = 0;
     let v = 100;
     const addS = 100 / this.width;
@@ -176,10 +263,27 @@ class MainScreen {
       v -= minusV;
     }
   }
+  addColorPointer() {
+    this.colorPointer = new ColorPointer(
+      10.5,
+      10.5,
+      this,
+      this.startx,
+      this.starty,
+      this.width,
+      this.height,
+      this.ctx,
+      this.hue
+    );
+    this.colorPointer.draw();
+  }
+
   update(h) {
     this.hue = h;
+    this.colorPointer.hue = this.hue;
     this.ctx.clearRect(this.startx, this.starty, this.width, this.height);
     this.draw();
+    this.colorPointer.draw();
   }
 }
 
@@ -246,6 +350,7 @@ class ColorPicker {
         this.ctx
       );
       this.mainScreen.draw();
+      this.mainScreen.addColorPointer();
     }
 
     if (this.components.includes("hueBar")) {
