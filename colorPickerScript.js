@@ -115,6 +115,68 @@ class Slider extends DragComponents {
   }
 }
 
+class TransparencySlider extends DragComponents {
+  constructor(
+    x,
+    y,
+    width,
+    height,
+    ctx,
+    canvas,
+    container,
+    containerY,
+    containerHeight
+  ) {
+    super();
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.ctx = ctx;
+    this.canvas = canvas;
+    this.container = container;
+    this.containerY = containerY;
+    this.containerHeight = containerHeight;
+    this.transparency = 0;
+    this.dragging = false;
+  }
+
+  draw() {
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle = "#000000";
+    this.ctx.fill(rectangle);
+    this.center = this.y - this.containerY + this.height / 2;
+    this.transparency = 1 - this.center / this.containerHeight;
+    this.ctx.fillStyle = "rgba(255,255,255," + this.transparency + ")";
+    this.ctx.fill(rectangle);
+    if (this.transparency > 0.7) {
+      this.ctx.strokeStyle = "#777777";
+    } else {
+      this.ctx.strokeStyle = "#ffffff";
+    }
+    this.ctx.stroke(rectangle);
+  }
+  update(event) {
+    this.ctx.clearRect(
+      this.x,
+      this.containerY - 5,
+      this.width + 1,
+      this.containerHeight + 10
+    );
+    const pos = mouseDown(event, this.canvas);
+    this.y = pos[1] + 0.5;
+    this.center = this.y + this.height / 2;
+    if (this.center > this.containerY + this.containerHeight) {
+      this.y = this.containerY + this.containerHeight - this.height / 2;
+    } else if (this.center < this.containerY) {
+      this.y = this.containerY - this.height / 2;
+    }
+    this.container.draw();
+    this.draw();
+  }
+}
+
 class ColorPointer extends DragComponents {
   constructor(
     width,
@@ -126,7 +188,8 @@ class ColorPointer extends DragComponents {
     containerHeight,
     ctx,
     canvas,
-    hue
+    hue,
+    colorPicker
   ) {
     super();
     this.width = width;
@@ -143,6 +206,7 @@ class ColorPointer extends DragComponents {
     this.canvas = canvas;
     this.ctx = ctx;
     this.hue = hue;
+    this.colorPicker = colorPicker;
     this.saturation = 100;
     this.value = 0;
     this.dragging = false;
@@ -156,6 +220,7 @@ class ColorPointer extends DragComponents {
     this.value =
       100 - ((this.centerY - this.containerY) / this.containerHeight) * 100;
     this.rgb = hsvToRgb(this.hue, this.saturation, this.value);
+    localStorage.setItem("rgb", this.rgb.join(","));
     this.ctx.fillStyle =
       "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
     this.ctx.fill(rectangle);
@@ -192,12 +257,13 @@ class ColorPointer extends DragComponents {
       this.y = this.containerY - this.height / 2;
       this.centerY = this.y + this.height / 2;
     }
+    this.colorPicker.colorBar.update();
     this.container.draw();
     this.draw();
   }
 }
 
-class HueBar {
+class Bars {
   constructor(x, y, width, height, ctx, canvas) {
     this.x = x;
     this.y = y;
@@ -206,6 +272,9 @@ class HueBar {
     this.ctx = ctx;
     this.canvas = canvas;
   }
+}
+
+class HueBar extends Bars {
   draw() {
     const addHue = 360 / this.height;
     let y = this.y;
@@ -234,8 +303,38 @@ class HueBar {
   }
 }
 
+class TransparencyBar extends Bars {
+  draw() {
+    let t = 255;
+    let y = this.y;
+    const minusT = 255 / this.height;
+    for (let i = 0; i < this.height; i++) {
+      const rectangle = new Path2D();
+      rectangle.rect(this.x, y, this.width, 1);
+      this.ctx.fillStyle = "rgba(255,255,255," + t / 255 + ")";
+      this.ctx.fill(rectangle);
+      t -= minusT;
+      y += 1;
+    }
+  }
+  addSlider() {
+    this.slider = new TransparencySlider(
+      this.x - 4.5,
+      this.y - 4.5,
+      this.width + 9,
+      9,
+      this.ctx,
+      this.canvas,
+      this,
+      this.y,
+      this.height
+    );
+    this.slider.draw();
+  }
+}
+
 class MainScreen {
-  constructor(x, y, width, height, h, ctx, canvas) {
+  constructor(x, y, width, height, h, ctx, canvas, colorPicker) {
     this.startx = x;
     this.starty = y;
     this.width = width;
@@ -243,6 +342,7 @@ class MainScreen {
     this.hue = h;
     this.ctx = ctx;
     this.canvas = canvas;
+    this.colorPicker = colorPicker;
   }
   draw() {
     // Low resolution = faster rendering speeds
@@ -302,7 +402,8 @@ class MainScreen {
       this.height,
       this.ctx,
       this.canvas,
-      this.hue
+      this.hue,
+      this.colorPicker
     );
     this.colorPointer.draw();
   }
@@ -313,6 +414,30 @@ class MainScreen {
     this.ctx.clearRect(this.startx, this.starty, this.width, this.height);
     this.draw();
     this.colorPointer.draw();
+    this.colorPicker.colorBar.update();
+  }
+}
+
+class ColorBar {
+  constructor(x, y, width, height, ctx, rgb, colorPointer) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.ctx = ctx;
+    this.rgb = rgb;
+    this.colorPointer = colorPointer;
+  }
+  draw() {
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle =
+      "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
+    this.ctx.fill(rectangle);
+  }
+  update() {
+    this.rgb = this.colorPointer.rgb;
+    this.draw();
   }
 }
 
@@ -329,19 +454,6 @@ class ColorPicker {
     this.calculateSizes();
   }
 
-  addTransparencyBar(x, y, width, height) {
-    let t = 0;
-    const addT = 255 / height;
-    for (let i = 0; i < height; i++) {
-      const rectangle = new Path2D();
-      rectangle.rect(x, y, width, 1);
-      this.ctx.fillStyle = "rgba(255,255,255," + t / 255 + ")";
-      this.ctx.fill(rectangle);
-      t += addT;
-      y += 1;
-    }
-  }
-
   calculateSizes() {
     this.padding = 15;
     this.startx = this.padding;
@@ -350,18 +462,26 @@ class ColorPicker {
       this.componentHeight = this.height - this.padding * 2;
       this.componentWidth =
         this.componentHeight + this.width / 5 + this.padding * 2;
+      this.dataStartY = this.starty;
+      this.dataStartX = this.componentWidth + this.padding * 2;
     } else {
       this.componentWidth = this.width;
       this.componentHeight =
         this.componentWidth - this.width / 5 - this.padding * 2;
+      this.dataStartY = this.componentHeight + this.padding * 2;
+      this.dataStartX = this.startx;
     }
     if (this.components.includes("transparencyBar")) {
-      this.addTransparencyBar(
+      this.transparencyBar = new TransparencyBar(
         this.startx,
         this.starty,
         this.componentWidth / 10,
-        this.componentHeight
+        this.componentHeight,
+        this.ctx,
+        this.canvas
       );
+      this.transparencyBar.draw();
+      this.transparencyBar.addSlider();
       this.startx += this.componentWidth / 10 + this.padding;
     }
 
@@ -386,7 +506,8 @@ class ColorPicker {
         this.componentHeight,
         0,
         this.ctx,
-        this.canvas
+        this.canvas,
+        this
       );
       this.mainScreen.draw();
       this.mainScreen.addColorPointer();
@@ -395,21 +516,41 @@ class ColorPicker {
     if (this.components.includes("hueBar")) {
       this.hueBar.addSlider(this.mainScreen);
     }
+
+    // Color data components
+    if (this.components.includes("colorBar")) {
+      this.colorBar = new ColorBar(
+        this.dataStartX,
+        this.dataStartY,
+        20,
+        20,
+        this.ctx,
+        this.mainScreen.colorPointer.rgb,
+        this.mainScreen.colorPointer
+      );
+      this.colorBar.draw();
+    }
   }
 }
 
 const canvas = document.getElementById("colorPicker");
-const components = ["transparencyBar", "hueBar", "mainScreen"];
+const components = ["transparencyBar", "hueBar", "mainScreen", "colorBar"];
 colorPicker = new ColorPicker(canvas, canvas.width, canvas.height, components);
 
 canvas.addEventListener("mousedown", (event) => {
   colorPicker.hueBar.slider.drag(event);
+  colorPicker.transparencyBar.slider.drag(event);
   colorPicker.mainScreen.colorPointer.drag(event);
 });
 canvas.addEventListener("mousemove", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
-    updateSlider = window.requestAnimationFrame(function () {
+    updateHueSlider = window.requestAnimationFrame(function () {
       colorPicker.hueBar.slider.update(event);
+    });
+  }
+  if (colorPicker.transparencyBar.slider.dragging) {
+    updateTransparencySlider = window.requestAnimationFrame(function () {
+      colorPicker.transparencyBar.slider.update(event);
     });
   }
   if (colorPicker.mainScreen.colorPointer.dragging) {
@@ -420,8 +561,12 @@ canvas.addEventListener("mousemove", (event) => {
 });
 window.addEventListener("mouseup", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
-    window.cancelAnimationFrame(updateSlider);
+    window.cancelAnimationFrame(updateHueSlider);
     colorPicker.hueBar.slider.finishDrag();
+  }
+  if (colorPicker.transparencyBar.slider.dragging) {
+    window.cancelAnimationFrame(updateTransparencySlider);
+    colorPicker.transparencyBar.slider.finishDrag();
   }
   if (colorPicker.mainScreen.colorPointer.dragging) {
     window.cancelAnimationFrame(updatePointer);
