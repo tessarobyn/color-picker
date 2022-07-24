@@ -81,8 +81,8 @@ export function rgbToHsl(r, g, b) {
     s = c / (1 - Math.abs(2 * l - 1));
   }
 
-  l = l * 100 + "%";
-  s = s * 100 + "%";
+  l = Math.round(l * 100) + "%";
+  s = Math.round(s * 100) + "%";
   return [h, s, l];
 }
 
@@ -112,8 +112,8 @@ export function rgbToHsv(r, g, b) {
     s = c / cmax;
   }
 
-  s = s * 100 + "%";
-  const v = cmax * 100 + "%";
+  s = Math.round(s * 100) + "%";
+  const v = Math.round(cmax * 100) + "%";
 
   return [h, s, v];
 }
@@ -126,5 +126,9 @@ export function rgbToCmyk(r, g, b) {
   const c = (1 - r1 - k) / (1 - k);
   const m = (1 - g1 - k) / (1 - k);
   const y = (1 - b1 - k) / (1 - k);
-  return [c, m, y, k];
+  let cmyk = [c, m, y, k];
+  for (let i = 0; i < cmyk.length; i++) {
+    cmyk[i] = Math.round(cmyk[i] * 100) + "%";
+  }
+  return cmyk;
 }

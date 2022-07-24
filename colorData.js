@@ -127,5 +127,29 @@ export class ColorData {
       );
       this.hexInput[1].value = this.hexValue;
     }
+    if (this.hslInput) {
+      this.hslValue = rgbToHsl(
+        this.rgbValue[0],
+        this.rgbValue[1],
+        this.rgbValue[2]
+      );
+      this.hslInput[1].value = this.hslValue.join(", ");
+    }
+    if (this.hsvInput) {
+      this.hsvValue = rgbToHsv(
+        this.rgbValue[0],
+        this.rgbValue[1],
+        this.rgbValue[2]
+      );
+      this.hsvInput[1].value = this.hsvValue.join(", ");
+    }
+    if (this.cmykInput) {
+      this.cmykValue = rgbToCmyk(
+        this.rgbValue[0],
+        this.rgbValue[1],
+        this.rgbValue[2]
+      );
+      this.cmykInput[1].value = this.cmykValue.join(", ");
+    }
   }
 }
