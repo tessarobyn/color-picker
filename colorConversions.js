@@ -24,3 +24,107 @@ export function hsvToRgb(h, s, v) {
   rgb.push(Math.round((arr[2] + m) * 255));
   return rgb;
 }
+
+export function rgbToHex(r, g, b) {
+  const arr = [r, g, b];
+  const hexValues = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+  ];
+  const hex = [];
+  for (let i = 0; i < arr.length; i++) {
+    hex.push(hexValues[Math.floor(arr[i] / 16)]);
+    hex.push(hexValues[arr[i] % 16]);
+  }
+  const hexCode = "#" + hex.join("");
+  return hexCode;
+}
+
+export function rgbToHsl(r, g, b) {
+  const r1 = r / 255;
+  const g1 = g / 255;
+  const b1 = b / 255;
+  const cmax = Math.max(r1, g1, b1);
+  const cmin = Math.min(r1, g1, b1);
+  const c = cmax - cmin;
+  let h;
+  if (c === 0) {
+    h = 0;
+  } else if (cmax === r1) {
+    h = 60 * (((g1 - b1) / c) % 6);
+  } else if (cmax === g1) {
+    h = 60 * ((b1 - r1) / c + 2);
+  } else if (cmax === b1) {
+    h = 60 * ((r1 - g1) / c + 4);
+  }
+
+  let l = (cmax + cmin) / 2;
+
+  let s;
+  if (c === 0) {
+    s = 0;
+  } else {
+    s = c / (1 - Math.abs(2 * l - 1));
+  }
+
+  l = l * 100 + "%";
+  s = s * 100 + "%";
+  return [h, s, l];
+}
+
+export function rgbToHsv(r, g, b) {
+  // Note: first part of code is identical to hsl conversion - maybe move to seperate function?
+  const r1 = r / 255;
+  const g1 = g / 255;
+  const b1 = b / 255;
+  const cmax = Math.max(r1, g1, b1);
+  const cmin = Math.min(r1, g1, b1);
+  const c = cmax - cmin;
+  let h;
+  if (c === 0) {
+    h = 0;
+  } else if (cmax === r1) {
+    h = 60 * (((g1 - b1) / c) % 6);
+  } else if (cmax === g1) {
+    h = 60 * ((b1 - r1) / c + 2);
+  } else if (cmax === b1) {
+    h = 60 * ((r1 - g1) / c + 4);
+  }
+
+  let s;
+  if (c === 0) {
+    s = 0;
+  } else {
+    s = c / cmax;
+  }
+
+  s = s * 100 + "%";
+  const v = cmax * 100 + "%";
+
+  return [h, s, v];
+}
+
+export function rgbToCmyk(r, g, b) {
+  const r1 = r / 255;
+  const g1 = g / 255;
+  const b1 = b / 255;
+  const k = 1 - Math.max(r1, g1, b1);
+  const c = (1 - r1 - k) / (1 - k);
+  const m = (1 - g1 - k) / (1 - k);
+  const y = (1 - b1 - k) / (1 - k);
+  return [c, m, y, k];
+}
