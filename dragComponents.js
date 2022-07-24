@@ -153,8 +153,7 @@ export class ColorPointer extends DragComponents {
     containerHeight,
     ctx,
     canvas,
-    hue,
-    colorPicker
+    hue
   ) {
     super();
     this.width = width;
@@ -171,7 +170,6 @@ export class ColorPointer extends DragComponents {
     this.canvas = canvas;
     this.ctx = ctx;
     this.hue = hue;
-    this.colorPicker = colorPicker;
     this.saturation = 100;
     this.value = 0;
     this.dragging = false;
@@ -222,7 +220,6 @@ export class ColorPointer extends DragComponents {
       this.y = this.containerY - this.height / 2;
       this.centerY = this.y + this.height / 2;
     }
-    this.colorPicker.colorBar.update();
     this.container.draw();
     this.draw();
   }

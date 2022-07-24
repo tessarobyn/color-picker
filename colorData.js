@@ -70,7 +70,7 @@ export class ColorData {
   }
   rgb() {
     this.rgbInput = this.newInput("rgb");
-    this.rgbInput[1].value = this.colorPointer.rgb.join(", ");
+    this.rgbInput[1].value = this.rgbValue.join(", ");
     this.container.appendChild(this.rgbInput[0]);
   }
   hex() {
@@ -78,7 +78,7 @@ export class ColorData {
     this.hexValue = rgbToHex(
       this.rgbValue[0],
       this.rgbValue[1],
-      this.rgbValue[1]
+      this.rgbValue[2]
     );
     this.hexInput[1].value = this.hexValue;
     this.container.appendChild(this.hexInput[0]);
@@ -88,7 +88,7 @@ export class ColorData {
     this.hslValue = rgbToHsl(
       this.rgbValue[0],
       this.rgbValue[1],
-      this.rgbValue[1]
+      this.rgbValue[2]
     );
     this.hslInput[1].value = this.hslValue.join(", ");
     this.container.appendChild(this.hslInput[0]);
@@ -98,7 +98,7 @@ export class ColorData {
     this.hsvValue = rgbToHsv(
       this.rgbValue[0],
       this.rgbValue[1],
-      this.rgbValue[1]
+      this.rgbValue[2]
     );
     this.hsvInput[1].value = this.hsvValue.join(", ");
     this.container.appendChild(this.hsvInput[0]);
@@ -108,9 +108,24 @@ export class ColorData {
     this.cmykValue = rgbToCmyk(
       this.rgbValue[0],
       this.rgbValue[1],
-      this.rgbValue[1]
+      this.rgbValue[2]
     );
     this.cmykInput[1].value = this.cmykValue.join(", ");
     this.container.appendChild(this.cmykInput[0]);
+  }
+
+  update() {
+    this.rgbValue = this.colorPointer.rgb;
+    if (this.rgbInput) {
+      this.rgbInput[1].value = this.rgbValue.join(", ");
+    }
+    if (this.hexInput) {
+      this.hexValue = rgbToHex(
+        this.rgbValue[0],
+        this.rgbValue[1],
+        this.rgbValue[2]
+      );
+      this.hexInput[1].value = this.hexValue;
+    }
   }
 }
