@@ -125,7 +125,8 @@ class TransparencySlider extends DragComponents {
     canvas,
     container,
     containerY,
-    containerHeight
+    containerHeight,
+    rgb
   ) {
     super();
     this.x = x;
@@ -264,13 +265,16 @@ class ColorPointer extends DragComponents {
 }
 
 class Bars {
-  constructor(x, y, width, height, ctx, canvas) {
+  constructor(x, y, width, height, ctx, canvas, rgb, colorPointer) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.ctx = ctx;
     this.canvas = canvas;
+    // Only applicable to transparency bar:
+    this.rgb = rgb;
+    this.colorPointer = colorPointer;
   }
 }
 
@@ -322,6 +326,12 @@ class TransparencyBar extends Bars {
       y += 1;
     }
   }
+
+  update() {
+    this.rgb = this.colorPointer.rgb;
+    this.draw();
+  }
+
   addSlider() {
     this.slider = new TransparencySlider(
       this.x - 4.5,
@@ -423,7 +433,7 @@ class MainScreen {
   }
 }
 
-class ColorData {
+class ColorBar {
   constructor(x, y, width, height, ctx, rgb, colorPointer) {
     this.x = x;
     this.y = y;
@@ -433,20 +443,6 @@ class ColorData {
     this.rgb = rgb;
     this.colorPointer = colorPointer;
   }
-
-  drawText(text) {
-    this.fontSize = 16;
-    this.ctx.font = this.fontSize + "px arial";
-    const textObj = this.ctx.measureText(text);
-    const textWidth = textObj.width;
-    const textX = this.x + (this.width / 2 - textWidth / 2);
-    const textY = this.y + (this.height / 2 + this.fontSize / 3);
-    this.ctx.fillStyle = "#ffffff";
-    this.ctx.fillText(text, textX, textY);
-  }
-}
-
-class ColorBar extends ColorData {
   draw() {
     const rectangle = new Path2D();
     rectangle.rect(this.x, this.y, this.width, this.height);
@@ -461,25 +457,52 @@ class ColorBar extends ColorData {
   }
 }
 
-class ColorDataBox extends ColorData {
-  draw() {
-    const rectangle = new Path2D();
-    rectangle.rect(this.x, this.y, this.width, this.height);
-    this.ctx.fillStyle = "rgba(125,125,125,.3)";
-    this.ctx.fill(rectangle);
+class ColorData {
+  constructor(parent, padding, colorPointer) {
+    this.container = document.createElement("div");
+    parent.appendChild(this.container);
+    this.padding = padding + "px";
+    this.container.style.padding = this.padding;
+    this.colorPointer = colorPointer;
   }
-  update() {
-    this.rgb = this.colorPointer.rgb;
-    this.draw();
+  newInput() {
+    const input = document.createElement("input");
+    input.style.fontFamily = "'roboto',sans-serif";
+    input.style.width = this.container.offsetWidth;
+    input.style.marginBottom = this.padding;
+    input.type = "text";
+    return input;
+  }
+  rgb() {
+    this.rgbInput = this.newInput();
+    this.rgbInput.value = this.colorPointer.rgb.join(", ");
+    this.container.appendChild(this.rgbInput);
+  }
+  hex() {
+    this.hexInput = this.newInput();
+    this.hexInput.value = this.colorPointer.rgb.join(", ");
+    this.container.appendChild(this.hexInput);
+  }
+  hsl() {
+    this.hslInput = this.newInput();
+    this.hslInput.value = this.colorPointer.rgb.join(", ");
+    this.container.appendChild(this.hslInput);
+  }
+  hsv() {
+    this.hsvInput = this.newInput();
+    this.hsvInput.value = this.colorPointer.rgb.join(", ");
+    this.container.appendChild(this.hsvInput);
+  }
+  cmyk() {
+    this.cmykInput = this.newInput();
+    this.cmykInput.value = this.colorPointer.rgb.join(", ");
+    this.container.appendChild(this.cmykInput);
   }
 }
 
 class ColorPicker {
-  constructor(canvas, width, height, components) {
-    this.canvas = canvas;
-    if (canvas.getContext) {
-      this.ctx = canvas.getContext("2d");
-    }
+  constructor(container, width, height, components) {
+    this.container = container;
     this.h = 0;
     this.width = width;
     this.height = height;
@@ -491,23 +514,30 @@ class ColorPicker {
     this.padding = 15;
     this.startx = this.padding;
     this.starty = this.padding;
-    if (this.width > this.height) {
+    this.canvas = document.createElement("canvas");
+    if (parseInt(this.width) > parseInt(this.height)) {
+      this.landscape = true;
+      this.canvas.height = this.height;
       this.componentHeight = this.height - this.padding * 2;
-      this.componentWidth =
-        this.componentHeight + this.width / 5 + this.padding * 2;
-      this.dataStartY = this.starty;
-      this.dataStartX = this.componentWidth;
-      this.dataWidth = this.width - this.componentWidth - this.padding;
-      this.dataHeight = this.componentHeight;
+      this.canvas.width = this.componentWidth =
+        this.componentHeight + this.padding * 2;
     } else {
-      this.componentWidth = this.width;
+      this.landscape = false;
+      this.canvas.width = this.componentWidth = this.width;
       this.componentHeight =
         this.componentWidth - this.width / 5 - this.padding * 2;
       this.dataStartY = this.componentHeight + this.padding * 2;
       this.dataStartX = this.startx;
       this.dataWidth = this.componentWidth - this.padding * 2;
-      this.dataHeight = this.height - this.componentHeight - this.padding * 3;
+      this.dataHeight =
+        (this.height - this.componentHeight - this.padding * 3) / 5;
+      this.canvas.height = this.componentHeight + this.dataHeight;
     }
+    if (this.canvas.getContext) {
+      this.ctx = this.canvas.getContext("2d");
+    }
+    this.container.appendChild(this.canvas);
+
     if (this.components.includes("transparencyBar")) {
       this.transparencyBar = new TransparencyBar(
         this.startx,
@@ -522,45 +552,39 @@ class ColorPicker {
       this.startx += this.componentWidth / 10 + this.padding;
     }
 
-    if (this.components.includes("hueBar")) {
-      this.hueBar = new HueBar(
-        this.startx,
-        this.starty,
-        this.componentWidth / 10,
-        this.componentHeight,
-        this.ctx,
-        this.canvas
-      );
-      this.hueBar.draw();
-      this.startx += this.componentWidth / 10 + this.padding;
-    }
+    this.hueBar = new HueBar(
+      this.startx,
+      this.starty,
+      this.componentWidth / 10,
+      this.componentHeight,
+      this.ctx,
+      this.canvas
+    );
+    this.hueBar.draw();
+    this.startx += this.componentWidth / 10 + this.padding;
 
-    if (this.components.includes("mainScreen")) {
-      this.mainScreen = new MainScreen(
-        this.startx,
-        this.starty,
-        this.componentWidth - this.startx - this.padding,
-        this.componentHeight,
-        0,
-        this.ctx,
-        this.canvas,
-        this
-      );
-      this.mainScreen.draw();
-      this.mainScreen.addColorPointer();
-    }
+    this.mainScreen = new MainScreen(
+      this.startx,
+      this.starty,
+      this.componentWidth - this.startx - this.padding,
+      this.componentHeight,
+      0,
+      this.ctx,
+      this.canvas,
+      this
+    );
+    this.mainScreen.draw();
+    this.mainScreen.addColorPointer();
 
-    if (this.components.includes("hueBar")) {
-      this.hueBar.addSlider(this.mainScreen);
-    }
+    this.hueBar.addSlider(this.mainScreen);
 
-    // Color data components
+    // Color bar
     if (this.components.includes("colorBar")) {
       this.colorBar = new ColorBar(
         this.dataStartX,
         this.dataStartY,
         this.dataWidth,
-        (this.dataHeight - this.padding * 3) / 4,
+        this.dataHeight,
         this.ctx,
         this.mainScreen.colorPointer.rgb,
         this.mainScreen.colorPointer
@@ -569,51 +593,72 @@ class ColorPicker {
       this.dataStartY +=
         (this.dataHeight - this.padding * 3) / 4 + this.padding;
     }
-    if (this.components.includes("hex")) {
-      this.hexDataBox = new ColorDataBox(
-        this.dataStartX,
-        this.dataStartY,
-        this.dataWidth,
-        (this.dataHeight - this.padding * 3) / 4,
-        this.ctx,
-        this.mainScreen.colorPointer.rgb,
+
+    // Color data
+    if (
+      this.components.includes("hex") ||
+      this.components.includes("rgb") ||
+      this.components.includes("hsl") ||
+      this.components.includes("hsv") ||
+      this.components.includes("cmyk")
+    ) {
+      this.colorData = new ColorData(
+        this.container,
+        this.padding,
         this.mainScreen.colorPointer
       );
-      this.hexDataBox.draw();
-      this.hexDataBox.drawText("#f0f0f0");
+      if (this.components.includes("rgb")) {
+        this.colorData.rgb();
+      }
+      if (this.components.includes("hex")) {
+        this.colorData.hex();
+      }
+      if (this.components.includes("hsl")) {
+        this.colorData.hsl();
+      }
+      if (this.components.includes("hsv")) {
+        this.colorData.hsv();
+      }
+      if (this.components.includes("cmyk")) {
+        this.colorData.cmyk();
+      }
     }
   }
 }
 
-const canvas = document.getElementById("colorPicker");
-const components = [
-  "transparencyBar",
-  "hueBar",
-  "mainScreen",
-  "colorBar",
-  "hex",
-  "rgb",
-  "hsl",
-  "hsv",
-  "cmyk",
-];
-colorPicker = new ColorPicker(canvas, canvas.width, canvas.height, components);
+const container = document.getElementById("colorPicker");
+container.style.backgroundColor = "#222222";
+console.log(
+  container.style.width.slice(0, container.style.width.length - 2),
+  container.style.height.slice(0, container.style.height.length - 2)
+);
+const components = ["colorBar", "hex", "rgb", "hsl", "hsv", "cmyk"];
+colorPicker = new ColorPicker(
+  container,
+  container.style.width.slice(0, container.style.width.length - 2),
+  container.style.height.slice(0, container.style.height.length - 2),
+  components
+);
 
-canvas.addEventListener("mousedown", (event) => {
+colorPicker.canvas.addEventListener("mousedown", (event) => {
   colorPicker.hueBar.slider.drag(event);
-  colorPicker.transparencyBar.slider.drag(event);
+  if (colorPicker.transparencyBar) {
+    colorPicker.transparencyBar.slider.drag(event);
+  }
   colorPicker.mainScreen.colorPointer.drag(event);
 });
-canvas.addEventListener("mousemove", (event) => {
+colorPicker.canvas.addEventListener("mousemove", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
     updateHueSlider = window.requestAnimationFrame(function () {
       colorPicker.hueBar.slider.update(event);
     });
   }
-  if (colorPicker.transparencyBar.slider.dragging) {
-    updateTransparencySlider = window.requestAnimationFrame(function () {
-      colorPicker.transparencyBar.slider.update(event);
-    });
+  if (colorPicker.transparencyBar) {
+    if (colorPicker.transparencyBar.slider.dragging) {
+      updateTransparencySlider = window.requestAnimationFrame(function () {
+        colorPicker.transparencyBar.slider.update(event);
+      });
+    }
   }
   if (colorPicker.mainScreen.colorPointer.dragging) {
     updatePointer = window.requestAnimationFrame(function () {
@@ -626,9 +671,11 @@ window.addEventListener("mouseup", (event) => {
     window.cancelAnimationFrame(updateHueSlider);
     colorPicker.hueBar.slider.finishDrag();
   }
-  if (colorPicker.transparencyBar.slider.dragging) {
-    window.cancelAnimationFrame(updateTransparencySlider);
-    colorPicker.transparencyBar.slider.finishDrag();
+  if (colorPicker.transparencyBar) {
+    if (colorPicker.transparencyBar.slider.dragging) {
+      window.cancelAnimationFrame(updateTransparencySlider);
+      colorPicker.transparencyBar.slider.finishDrag();
+    }
   }
   if (colorPicker.mainScreen.colorPointer.dragging) {
     window.cancelAnimationFrame(updatePointer);
