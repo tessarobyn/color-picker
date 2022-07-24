@@ -19,6 +19,7 @@ export class ColorPicker {
     this.canvas = document.createElement("canvas");
     if (parseInt(this.width) > parseInt(this.height)) {
       this.landscape = true;
+      this.container.style.display = "flex";
       this.canvas.height = this.height;
       this.componentHeight = this.height - this.padding * 2;
       this.canvas.width = this.componentWidth =
@@ -108,7 +109,9 @@ export class ColorPicker {
         this.container,
         this.padding,
         this.mainScreen.colorPointer,
-        this.canvas.height
+        this.canvas.height,
+        this.canvas.width,
+        this.landscape
       );
       if (this.components.includes("rgb")) {
         this.colorData.rgb();
