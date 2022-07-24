@@ -19,6 +19,8 @@ colorPicker.canvas.addEventListener("mousedown", (event) => {
     colorPicker.transparencyBar.slider.drag(event);
   }
   colorPicker.mainScreen.colorPointer.drag(event);
+  colorPicker.colorData.update();
+  colorPicker.colorBar.update();
 });
 window.addEventListener("mousemove", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
@@ -38,6 +40,8 @@ window.addEventListener("mousemove", (event) => {
       colorPicker.mainScreen.colorPointer.update(event);
     });
   }
+  colorPicker.colorData.update();
+  colorPicker.colorBar.update();
 });
 window.addEventListener("mouseup", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
