@@ -220,9 +220,47 @@ export class ColorData {
     }
   }
 
+  hexCheck(hex) {
+    this.valid = true;
+    if (hex[0] === "#") {
+      hex = hex.slice(1, hex.length);
+    } else if (hex[0] === "0" && hex[1] === "x") {
+      hex = hex.slice(2, hex.length);
+    }
+    if (hex.length != 3) {
+      if (hex.length != 6) {
+        this.valid = false;
+      }
+    }
+    if (this.valid) {
+      const hexValues = [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+      ];
+      for (let i = 0; i < hex.length; i++) {
+        if (!hexValues.includes(hex[i])) {
+          this.valid = false;
+        }
+      }
+    }
+  }
+
   checkKey(event, input) {
     if (event.key === "Enter") {
-      event.preventDefault();
       if (input.id === "rgb") {
         const temp = input.value.split(",");
         this.rgbCheck(temp);
@@ -235,13 +273,20 @@ export class ColorData {
           );
         }
       } else if (input.id === "hex") {
-        this.hexValue = input.value;
-        this.rgbValue = hexToRgb(this.hexValue);
-        this.hsvValue = rgbToHsv(
-          this.rgbValue[0],
-          this.rgbValue[1],
-          this.rgbValue[2]
-        );
+        const temp = input.value;
+        this.hexCheck(temp);
+        if (this.valid) {
+          if (temp[0] != "#") {
+            temp = "#" + temp;
+          }
+          this.hexValue = temp;
+          this.rgbValue = hexToRgb(this.hexValue);
+          this.hsvValue = rgbToHsv(
+            this.rgbValue[0],
+            this.rgbValue[1],
+            this.rgbValue[2]
+          );
+        }
       } else if (input.id === "hsl") {
         this.hslValue = input.value.split(",");
         this.rgbValue = hslToRgb(
