@@ -216,4 +216,11 @@ export function hsvToRgb(h, s, v) {
   return rgb;
 }
 
-export function cmykToRgb(c, m, y, k) {}
+export function cmykToRgb(c, m, y, k) {
+  console.log(c, m, y, k);
+  let rgb = [];
+  rgb.push(255 * (1 - c) * (1 - k));
+  rgb.push(255 * (1 - m) * (1 - k));
+  rgb.push(255 * (1 - y) * (1 - k));
+  return rgb;
+}

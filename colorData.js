@@ -1,4 +1,5 @@
 import {
+  cmykToRgb,
   hexToRgb,
   hslToRgb,
   hsvToRgb,
@@ -240,6 +241,22 @@ export class ColorData {
           this.hsvValue[0],
           this.hsvValue[1].slice(0, -1),
           this.hsvValue[2].slice(0, -1)
+        );
+        this.hsvValue = rgbToHsv(
+          this.rgbValue[0],
+          this.rgbValue[1],
+          this.rgbValue[2]
+        );
+      } else if (input.id === "cmyk") {
+        this.cmykValue = input.value.split(",");
+        for (let i = 0; i < this.cmykValue.length; i++) {
+          this.cmykValue[i] = this.cmykValue[i].slice(0, -1) / 100;
+        }
+        this.rgbValue = cmykToRgb(
+          this.cmykValue[0],
+          this.cmykValue[1],
+          this.cmykValue[2],
+          this.cmykValue[3]
         );
         this.hsvValue = rgbToHsv(
           this.rgbValue[0],
