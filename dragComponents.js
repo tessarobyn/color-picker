@@ -160,6 +160,47 @@ export class ColorPointer extends DragComponents {
     this.ctx.stroke(rectangle);
   }
 
+  inputUpdate(hsv) {
+    this.hue = hsv[0];
+    this.saturation = hsv[1];
+    this.value = hsv[2];
+    this.x =
+      this.containerX +
+      this.containerWidth * (this.saturation / 100) -
+      this.width / 2;
+    this.y =
+      this.containerHeight -
+      (this.containerY + this.containerHeight - this.containerY) *
+        (this.value / 100) +
+      this.height;
+    this.centerX = this.x + this.width / 2;
+    this.centerY = this.y + this.height / 2;
+    this.inputUpdateDraw();
+  }
+
+  inputUpdateDraw() {
+    this.ctx.clearRect(
+      this.containerX - this.width / 2 - 1,
+      this.containerY - this.height / 2 - 1,
+      this.containerWidth + this.width * 2,
+      this.containerHeight + this.height * 2
+    );
+    this.container.draw();
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.rgb = hsvToRgb(this.hue, this.saturation, this.value);
+    localStorage.setItem("rgb", this.rgb.join(","));
+    this.ctx.fillStyle =
+      "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
+    this.ctx.fill(rectangle);
+    if (this.value > 70) {
+      this.ctx.strokeStyle = "#000000";
+    } else {
+      this.ctx.strokeStyle = "#ffffff";
+    }
+    this.ctx.stroke(rectangle);
+  }
+
   update(event) {
     this.ctx.clearRect(
       this.containerX - this.width / 2 - 1,
@@ -188,46 +229,5 @@ export class ColorPointer extends DragComponents {
     }
     this.container.draw();
     this.draw();
-  }
-
-  inputUpdateDraw() {
-    this.ctx.clearRect(
-      this.containerX - this.width / 2 - 1,
-      this.containerY - this.height / 2 - 1,
-      this.containerWidth + this.width * 2,
-      this.containerHeight + this.height * 2
-    );
-    this.container.draw();
-    const rectangle = new Path2D();
-    rectangle.rect(this.x, this.y, this.width, this.height);
-    this.rgb = hsvToRgb(this.hue, this.saturation, this.value);
-    localStorage.setItem("rgb", this.rgb.join(","));
-    this.ctx.fillStyle =
-      "rgb(" + this.rgb[0] + "," + this.rgb[1] + "," + this.rgb[2] + ")";
-    this.ctx.fill(rectangle);
-    if (this.value > 70) {
-      this.ctx.strokeStyle = "#000000";
-    } else {
-      this.ctx.strokeStyle = "#ffffff";
-    }
-    this.ctx.stroke(rectangle);
-  }
-
-  inputUpdate(hsv) {
-    this.hue = hsv[0];
-    this.saturation = hsv[1].slice(0, -1);
-    this.value = hsv[2].slice(0, -1);
-    this.x =
-      this.containerX +
-      this.containerWidth * (this.saturation / 100) -
-      this.width / 2;
-    this.y =
-      this.containerHeight -
-      (this.containerY + this.containerHeight - this.containerY) *
-        (this.value / 100) +
-      this.height;
-    this.centerX = this.x + this.width / 2;
-    this.centerY = this.y + this.height / 2;
-    this.inputUpdateDraw();
   }
 }

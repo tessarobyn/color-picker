@@ -19,9 +19,9 @@ export function hsvToRgb(h, s, v) {
     arr = [c, 0, x];
   }
   const rgb = [];
-  rgb.push(Math.round((arr[0] + m) * 255));
-  rgb.push(Math.round((arr[1] + m) * 255));
-  rgb.push(Math.round((arr[2] + m) * 255));
+  rgb.push((arr[0] + m) * 255);
+  rgb.push((arr[1] + m) * 255);
+  rgb.push((arr[2] + m) * 255);
   return rgb;
 }
 
@@ -119,9 +119,8 @@ export function rgbToHsv(r, g, b) {
     s = c / cmax;
   }
 
-  h = Math.round(h);
-  s = Math.round(s * 100) + "%";
-  const v = Math.round(cmax * 100) + "%";
+  s = s * 100;
+  const v = cmax * 100;
 
   return [h, s, v];
 }
