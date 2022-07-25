@@ -71,6 +71,9 @@ export function rgbToHsl(r, g, b) {
   } else if (cmax === b1) {
     h = 60 * ((r1 - g1) / c + 4);
   }
+  if (h < 0) {
+    h += 360;
+  }
 
   let l = (cmax + cmin) / 2;
 
@@ -81,6 +84,7 @@ export function rgbToHsl(r, g, b) {
     s = c / (1 - Math.abs(2 * l - 1));
   }
 
+  h = Math.round(h);
   l = Math.round(l * 100) + "%";
   s = Math.round(s * 100) + "%";
   return [h, s, l];
@@ -104,6 +108,9 @@ export function rgbToHsv(r, g, b) {
   } else if (cmax === b1) {
     h = 60 * ((r1 - g1) / c + 4);
   }
+  if (h < 0) {
+    h += 360;
+  }
 
   let s;
   if (c === 0) {
@@ -112,6 +119,7 @@ export function rgbToHsv(r, g, b) {
     s = c / cmax;
   }
 
+  h = Math.round(h);
   s = Math.round(s * 100) + "%";
   const v = Math.round(cmax * 100) + "%";
 
@@ -129,6 +137,9 @@ export function rgbToCmyk(r, g, b) {
   let cmyk = [c, m, y, k];
   for (let i = 0; i < cmyk.length; i++) {
     cmyk[i] = Math.round(cmyk[i] * 100) + "%";
+  }
+  if (cmyk.includes(NaN + "%")) {
+    cmyk = ["0%", "0%", "0%", "100%"];
   }
   return cmyk;
 }

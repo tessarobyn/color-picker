@@ -44,7 +44,6 @@ export class ColorData {
     inputContainer.style.flex = "1";
     inputContainer.style.minHeight = "0";
     inputContainer.style.width = "100%";
-    inputContainer.style.fontFamily = "'roboto',sans-serif";
     inputContainer.style.display = "flex";
     inputContainer.style.alignItems = "center";
     inputContainer.style.marginBottom = this.padding;
@@ -54,6 +53,7 @@ export class ColorData {
     label.style.width = "30%";
     label.style.textAlign = "center";
     label.style.color = "#ffffff";
+    label.style.fontFamily = "'roboto',sans-serif";
     label.style.marginRight = this.padding;
     inputContainer.appendChild(label);
 
@@ -63,6 +63,10 @@ export class ColorData {
     input.style.boxSizing = "border-box";
     input.style.width = "100%";
     input.style.textAlign = "center";
+    input.style.color = "#ffffff";
+    input.style.fontFamily = "'roboto',sans-serif";
+    input.style.borderStyle = "none";
+    input.style.backgroundColor = "#555555";
     input.type = "text";
     inputContainer.appendChild(input);
 
