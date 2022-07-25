@@ -81,6 +81,7 @@ export class Slider extends DragComponents {
 
   inputUpdateDraw() {
     this.center = this.starty + (this.hue / 360) * this.containerHeight;
+    this.center += 4.5;
     this.y = this.center - this.height / 2;
     const rectangle = new Path2D();
     rectangle.rect(this.x, this.y, this.width, this.height);
