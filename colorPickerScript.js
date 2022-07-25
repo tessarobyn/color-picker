@@ -10,6 +10,7 @@ const colorPicker = new ColorPicker(
   components
 );
 
+// Sliders/pointer updates
 let updateHueSlider;
 let updateTransparencySlider;
 let updatePointer;
@@ -27,20 +28,22 @@ window.addEventListener("mousemove", (event) => {
     updateHueSlider = window.requestAnimationFrame(function () {
       colorPicker.hueBar.slider.update(event);
     });
+    colorPicker.colorData.update();
   }
   if (colorPicker.transparencyBar) {
     if (colorPicker.transparencyBar.slider.dragging) {
       updateTransparencySlider = window.requestAnimationFrame(function () {
         colorPicker.transparencyBar.slider.update(event);
       });
+      colorPicker.colorData.update();
     }
   }
   if (colorPicker.mainScreen.colorPointer.dragging) {
     updatePointer = window.requestAnimationFrame(function () {
       colorPicker.mainScreen.colorPointer.update(event);
     });
+    colorPicker.colorData.update();
   }
-  colorPicker.colorData.update();
   colorPicker.colorBar.update();
 });
 window.addEventListener("mouseup", (event) => {
@@ -59,3 +62,5 @@ window.addEventListener("mouseup", (event) => {
     colorPicker.mainScreen.colorPointer.finishDrag();
   }
 });
+
+// For color data:

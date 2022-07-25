@@ -65,6 +65,11 @@ export class ColorData {
     input.style.textAlign = "center";
     input.style.color = "#ffffff";
     input.style.fontFamily = "'roboto',sans-serif";
+    if (this.canvasWidth <= 200) {
+      input.style.fontSize = "12px";
+    } else {
+      input.style.fontSize = "14px";
+    }
     input.style.borderStyle = "none";
     input.style.backgroundColor = "#555555";
     input.type = "text";
@@ -76,6 +81,9 @@ export class ColorData {
     this.rgbInput = this.newInput("rgb");
     this.rgbInput[1].value = this.rgbValue.join(", ");
     this.container.appendChild(this.rgbInput[0]);
+    this.rgbInput = this.rgbInput[1];
+    this.rgbInput.id = "rgb";
+    this.rgbInput.classList.add("colorDataInputs");
   }
   hex() {
     this.hexInput = this.newInput("hex");
@@ -86,6 +94,9 @@ export class ColorData {
     );
     this.hexInput[1].value = this.hexValue;
     this.container.appendChild(this.hexInput[0]);
+    this.hexInput = this.hexInput[1];
+    this.hexInput.id = "hex";
+    this.hexInput.classList.add("colorDataInputs");
   }
   hsl() {
     this.hslInput = this.newInput("hsl");
@@ -96,6 +107,9 @@ export class ColorData {
     );
     this.hslInput[1].value = this.hslValue.join(", ");
     this.container.appendChild(this.hslInput[0]);
+    this.hslInput = this.hslInput[1];
+    this.hslInput.id = "hsl";
+    this.hslInput.classList.add("colorDataInputs");
   }
   hsv() {
     this.hsvInput = this.newInput("hsv");
@@ -106,6 +120,9 @@ export class ColorData {
     );
     this.hsvInput[1].value = this.hsvValue.join(", ");
     this.container.appendChild(this.hsvInput[0]);
+    this.hsvInput = this.hsvInput[1];
+    this.hsvInput.id = "hsv";
+    this.hsvInput.classList.add("colorDataInputs");
   }
   cmyk() {
     this.cmykInput = this.newInput("cmyk");
@@ -116,12 +133,15 @@ export class ColorData {
     );
     this.cmykInput[1].value = this.cmykValue.join(", ");
     this.container.appendChild(this.cmykInput[0]);
+    this.cmykInput = this.cmykInput[1];
+    this.cmykInput.id = "cmyk";
+    this.cmykInput.classList.add("colorDataInputs");
   }
 
   update() {
     this.rgbValue = this.colorPointer.rgb;
     if (this.rgbInput) {
-      this.rgbInput[1].value = this.rgbValue.join(", ");
+      this.rgbInput.value = this.rgbValue.join(", ");
     }
     if (this.hexInput) {
       this.hexValue = rgbToHex(
@@ -129,7 +149,7 @@ export class ColorData {
         this.rgbValue[1],
         this.rgbValue[2]
       );
-      this.hexInput[1].value = this.hexValue;
+      this.hexInput.value = this.hexValue;
     }
     if (this.hslInput) {
       this.hslValue = rgbToHsl(
@@ -137,7 +157,7 @@ export class ColorData {
         this.rgbValue[1],
         this.rgbValue[2]
       );
-      this.hslInput[1].value = this.hslValue.join(", ");
+      this.hslInput.value = this.hslValue.join(", ");
     }
     if (this.hsvInput) {
       this.hsvValue = rgbToHsv(
@@ -145,7 +165,7 @@ export class ColorData {
         this.rgbValue[1],
         this.rgbValue[2]
       );
-      this.hsvInput[1].value = this.hsvValue.join(", ");
+      this.hsvInput.value = this.hsvValue.join(", ");
     }
     if (this.cmykInput) {
       this.cmykValue = rgbToCmyk(
@@ -153,7 +173,7 @@ export class ColorData {
         this.rgbValue[1],
         this.rgbValue[2]
       );
-      this.cmykInput[1].value = this.cmykValue.join(", ");
+      this.cmykInput.value = this.cmykValue.join(", ");
     }
   }
 }
