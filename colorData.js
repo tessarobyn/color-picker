@@ -1,4 +1,11 @@
-import { rgbToCmyk, rgbToHex, rgbToHsl, rgbToHsv } from "./colorConversions.js";
+import {
+  hexToRgb,
+  hslToRgb,
+  rgbToCmyk,
+  rgbToHex,
+  rgbToHsl,
+  rgbToHsv,
+} from "./colorConversions.js";
 
 export class ColorData {
   constructor(
@@ -196,21 +203,29 @@ export class ColorData {
       event.preventDefault();
       if (input.id === "rgb") {
         this.rgbValue = input.value.split(",");
-        const hsv = rgbToHsv(
+        this.hsvValue = rgbToHsv(
           this.rgbValue[0],
           this.rgbValue[1],
           this.rgbValue[2]
         );
-        this.colorPicker.mainScreen.update(hsv[0]);
-        this.colorPicker.mainScreen.colorPointer.inputUpdate(
-          hsv,
-          this.rgbValue
+      } else if (input.id === "hex") {
+        this.hexValue = input.value;
+        this.rgbValue = hexToRgb(this.hexValue);
+        this.hsvValue = rgbToHsv(
+          this.rgbValue[0],
+          this.rgbValue[1],
+          this.rgbValue[2]
         );
-        this.colorPicker.colorBar.update();
-        this.colorPicker.hueBar.slider.inputUpdate(hsv[0]);
-        // Have to update colorPointer before updating this because it uses colorPointer data
-        this.update();
       }
+      this.colorPicker.mainScreen.update(this.hsvValue[0]);
+      this.colorPicker.mainScreen.colorPointer.inputUpdate(
+        this.hsvValue,
+        this.rgbValue
+      );
+      this.colorPicker.colorBar.update();
+      this.colorPicker.hueBar.slider.inputUpdate(this.hsvValue[0]);
+      // Have to update colorPointer before updating this because it uses colorPointer data
+      this.update();
     }
   }
 }
