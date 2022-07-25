@@ -15,7 +15,7 @@ export function hsvToRgb(h, s, v) {
     arr = [0, x, c];
   } else if (240 <= h && h < 300) {
     arr = [x, 0, c];
-  } else if (300 <= h && h < 360) {
+  } else if (300 <= h && h <= 360) {
     arr = [c, 0, x];
   }
   const rgb = [];
