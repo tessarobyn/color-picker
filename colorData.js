@@ -80,6 +80,9 @@ export class ColorData {
   }
   rgb() {
     this.rgbInput = this.newInput("rgb");
+    for (let i = 0; i < this.rgbValue.length; i++) {
+      this.rgbValue[i] = Math.round(this.rgbValue[i]);
+    }
     this.rgbInput[1].value = this.rgbValue.join(", ");
     this.container.appendChild(this.rgbInput[0]);
     this.rgbInput = this.rgbInput[1];
@@ -119,6 +122,9 @@ export class ColorData {
       this.rgbValue[1],
       this.rgbValue[2]
     );
+    for (let i = 0; i < this.hsvValue.length; i++) {
+      this.hsvValue[i] = Math.round(this.hsvValue[i]) + "%";
+    }
     this.hsvInput[1].value = this.hsvValue.join(", ");
     this.container.appendChild(this.hsvInput[0]);
     this.hsvInput = this.hsvInput[1];
@@ -141,7 +147,11 @@ export class ColorData {
 
   update() {
     this.rgbValue = this.colorPointer.rgb;
+
     if (this.rgbInput) {
+      for (let i = 0; i < this.rgbValue.length; i++) {
+        this.rgbValue[i] = Math.round(this.rgbValue[i]);
+      }
       this.rgbInput.value = this.rgbValue.join(", ");
     }
     if (this.hexInput) {
@@ -166,6 +176,9 @@ export class ColorData {
         this.rgbValue[1],
         this.rgbValue[2]
       );
+      for (let i = 0; i < this.hsvValue.length; i++) {
+        this.hsvValue[i] = Math.round(this.hsvValue[i]) + "%";
+      }
       this.hsvInput.value = this.hsvValue.join(", ");
     }
     if (this.cmykInput) {
@@ -183,13 +196,11 @@ export class ColorData {
       event.preventDefault();
       if (input.id === "rgb") {
         this.rgbValue = input.value.split(",");
-        console.log(this.rgbValue);
         const hsv = rgbToHsv(
           this.rgbValue[0],
           this.rgbValue[1],
           this.rgbValue[2]
         );
-        console.log(hsv);
         this.colorPicker.mainScreen.update(hsv[0]);
         this.colorPicker.mainScreen.colorPointer.inputUpdate(
           hsv,
