@@ -107,7 +107,7 @@ export class ColorPicker {
       this.colorData = new ColorData(
         this.container,
         this.padding,
-        this.mainScreen.colorPointer,
+        this,
         this.canvas.height,
         this.canvas.width,
         this.landscape
