@@ -73,8 +73,7 @@ export class ColorPicker {
       this.componentHeight,
       0,
       this.ctx,
-      this.canvas,
-      this
+      this.canvas
     );
     this.mainScreen.draw();
     this.mainScreen.addColorPointer();
