@@ -64,3 +64,9 @@ window.addEventListener("mouseup", (event) => {
 });
 
 // For color data:
+const inputBoxes = document.querySelectorAll(".colorDataInputs");
+inputBoxes.forEach((input) => {
+  input.addEventListener("keydown", (event) => {
+    colorPicker.colorData.checkKey(event, input);
+  });
+});

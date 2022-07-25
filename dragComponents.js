@@ -223,4 +223,8 @@ export class ColorPointer extends DragComponents {
     this.container.draw();
     this.draw();
   }
+
+  inputUpdate(rgb) {
+    this.rgb = rgb;
+  }
 }

@@ -4,7 +4,7 @@ export class ColorData {
   constructor(
     parent,
     padding,
-    colorPointer,
+    colorPicker,
     canvasHeight,
     canvasWidth,
     landscape
@@ -13,8 +13,9 @@ export class ColorData {
     this.container = document.createElement("div");
     this.parent = parent;
     this.parent.appendChild(this.container);
-    this.colorPointer = colorPointer;
-    this.rgbValue = this.colorPointer.rgb;
+    this.colorPicker = colorPicker;
+    this.colorPointer = this.colorPicker.mainScreen.colorPointer;
+    this.rgbValue = this.colorPicker.mainScreen.colorPointer.rgb;
     this.canvasHeight = canvasHeight;
     this.canvasWidth = canvasWidth;
     this.landscape = landscape;
@@ -174,6 +175,27 @@ export class ColorData {
         this.rgbValue[2]
       );
       this.cmykInput.value = this.cmykValue.join(", ");
+    }
+  }
+
+  checkKey(event, input) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (input.id === "rgb") {
+        this.rgbValue = input.value.split(",");
+        console.log(this.rgbValue);
+        const hsv = rgbToHsv(
+          this.rgbValue[0],
+          this.rgbValue[1],
+          this.rgbValue[2]
+        );
+        console.log(hsv);
+        this.colorPicker.mainScreen.update(hsv[0]);
+        this.colorPicker.mainScreen.colorPointer.inputUpdate(this.rgbValue);
+        this.colorPicker.colorBar.update();
+        // Need to update colorPointer before updating this
+        this.update();
+      }
     }
   }
 }
