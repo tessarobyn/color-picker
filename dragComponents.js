@@ -225,6 +225,8 @@ export class ColorPointer extends DragComponents {
       (this.containerY + this.containerHeight - this.containerY) *
         (this.value / 100) +
       this.height;
+    this.centerX = this.x + this.width / 2;
+    this.centerY = this.y + this.height / 2;
     this.inputUpdateDraw();
   }
 }
