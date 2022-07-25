@@ -205,16 +205,35 @@ export class ColorData {
     }
   }
 
+  rgbCheck(rgb) {
+    this.valid = true;
+    if (rgb.length != 3) {
+      this.valid = false;
+    } else {
+      for (let i = 0; i < rgb.length; i++) {
+        if (isNaN(rgb[i])) {
+          this.valid = false;
+        } else if (0 > parseInt(rgb[i]) || parseInt(rgb[i]) > 255) {
+          this.valid = false;
+        }
+      }
+    }
+  }
+
   checkKey(event, input) {
     if (event.key === "Enter") {
       event.preventDefault();
       if (input.id === "rgb") {
-        this.rgbValue = input.value.split(",");
-        this.hsvValue = rgbToHsv(
-          this.rgbValue[0],
-          this.rgbValue[1],
-          this.rgbValue[2]
-        );
+        const temp = input.value.split(",");
+        this.rgbCheck(temp);
+        if (this.valid) {
+          this.rgbValue = temp;
+          this.hsvValue = rgbToHsv(
+            this.rgbValue[0],
+            this.rgbValue[1],
+            this.rgbValue[2]
+          );
+        }
       } else if (input.id === "hex") {
         this.hexValue = input.value;
         this.rgbValue = hexToRgb(this.hexValue);
@@ -264,15 +283,19 @@ export class ColorData {
           this.rgbValue[2]
         );
       }
-      this.colorPicker.mainScreen.update(this.hsvValue[0]);
-      this.colorPicker.mainScreen.colorPointer.inputUpdate(
-        this.hsvValue,
-        this.rgbValue
-      );
-      this.colorPicker.colorBar.update();
-      this.colorPicker.hueBar.slider.inputUpdate(this.hsvValue[0]);
-      // Have to update colorPointer before updating this because it uses colorPointer data
-      this.update();
+      if (this.valid) {
+        this.colorPicker.mainScreen.update(this.hsvValue[0]);
+        this.colorPicker.mainScreen.colorPointer.inputUpdate(
+          this.hsvValue,
+          this.rgbValue
+        );
+        this.colorPicker.colorBar.update();
+        this.colorPicker.hueBar.slider.inputUpdate(this.hsvValue[0]);
+        // Have to update colorPointer before updating this because it uses colorPointer data
+        this.update();
+      } else {
+        this.update();
+      }
     }
   }
 }
