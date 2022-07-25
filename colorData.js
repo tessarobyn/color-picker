@@ -191,9 +191,12 @@ export class ColorData {
         );
         console.log(hsv);
         this.colorPicker.mainScreen.update(hsv[0]);
-        this.colorPicker.mainScreen.colorPointer.inputUpdate(this.rgbValue);
+        this.colorPicker.mainScreen.colorPointer.inputUpdate(
+          hsv,
+          this.rgbValue
+        );
         this.colorPicker.colorBar.update();
-        // Need to update colorPointer before updating this
+        // Have to update colorPointer before updating this because it uses colorPointer data
         this.update();
       }
     }
