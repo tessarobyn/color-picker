@@ -196,6 +196,7 @@ export class ColorData {
           this.rgbValue
         );
         this.colorPicker.colorBar.update();
+        this.colorPicker.hueBar.slider.inputUpdate(hsv[0]);
         // Have to update colorPointer before updating this because it uses colorPointer data
         this.update();
       }

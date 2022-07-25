@@ -33,6 +33,7 @@ export class Slider extends DragComponents {
     super();
     this.x = x;
     this.y = y;
+    this.starty = y;
     this.width = width;
     this.height = height;
     this.ctx = ctx;
@@ -76,6 +77,32 @@ export class Slider extends DragComponents {
       this.hue = 359;
     }
     this.mainScreen.update(this.hue);
+  }
+
+  inputUpdateDraw() {
+    this.center = this.starty + (this.hue / 360) * this.containerHeight;
+    this.y = this.center - this.height / 2;
+    const rectangle = new Path2D();
+    rectangle.rect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle = "hsl(" + this.hue + ",100%,50%)";
+    this.ctx.fill(rectangle);
+    this.ctx.strokeStyle = "#ffffff";
+    this.ctx.stroke(rectangle);
+  }
+
+  inputUpdate(h) {
+    this.hue = h;
+    this.ctx.clearRect(
+      this.x,
+      this.containerY - 5,
+      this.width + 1,
+      this.containerHeight + 10
+    );
+    this.container.draw();
+    this.inputUpdateDraw();
+    if (this.hue >= 360) {
+      this.hue = 359;
+    }
   }
 }
 
