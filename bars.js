@@ -1,4 +1,4 @@
-import { Slider, TransparencySlider } from "./dragComponents.js";
+import { Slider } from "./dragComponents.js";
 
 class Bars {
   constructor(x, y, width, height, ctx, canvas, rgb, colorPointer) {
