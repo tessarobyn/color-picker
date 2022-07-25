@@ -216,6 +216,18 @@ export class ColorData {
           this.rgbValue[1],
           this.rgbValue[2]
         );
+      } else if (input.id === "hsl") {
+        this.hslValue = input.value.split(",");
+        this.rgbValue = hslToRgb(
+          this.hslValue[0],
+          this.hslValue[1],
+          this.hslValue[2]
+        );
+        this.hsvValue = rgbToHsv(
+          this.rgbValue[0],
+          this.rgbValue[1],
+          this.rgbValue[2]
+        );
       }
       this.colorPicker.mainScreen.update(this.hsvValue[0]);
       this.colorPicker.mainScreen.colorPointer.inputUpdate(
