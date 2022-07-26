@@ -10,48 +10,49 @@ const colorPicker = new ColorPicker(
   components
 );
 
+// Sliders/pointer updates
 let updateHueSlider;
-let updateTransparencySlider;
 let updatePointer;
 colorPicker.canvas.addEventListener("mousedown", (event) => {
   colorPicker.hueBar.slider.drag(event);
-  if (colorPicker.transparencyBar) {
-    colorPicker.transparencyBar.slider.drag(event);
-  }
   colorPicker.mainScreen.colorPointer.drag(event);
+  colorPicker.colorData.update();
+  colorPicker.colorBar.update();
 });
+
 window.addEventListener("mousemove", (event) => {
   if (colorPicker.hueBar.slider.dragging) {
     updateHueSlider = window.requestAnimationFrame(function () {
       colorPicker.hueBar.slider.update(event);
     });
+    colorPicker.colorData.update();
   }
-  if (colorPicker.transparencyBar) {
-    if (colorPicker.transparencyBar.slider.dragging) {
-      updateTransparencySlider = window.requestAnimationFrame(function () {
-        colorPicker.transparencyBar.slider.update(event);
-      });
-    }
-  }
+
   if (colorPicker.mainScreen.colorPointer.dragging) {
     updatePointer = window.requestAnimationFrame(function () {
       colorPicker.mainScreen.colorPointer.update(event);
     });
+    colorPicker.colorData.update();
   }
+  colorPicker.colorBar.update();
 });
-window.addEventListener("mouseup", (event) => {
+
+window.addEventListener("mouseup", () => {
   if (colorPicker.hueBar.slider.dragging) {
     window.cancelAnimationFrame(updateHueSlider);
     colorPicker.hueBar.slider.finishDrag();
   }
-  if (colorPicker.transparencyBar) {
-    if (colorPicker.transparencyBar.slider.dragging) {
-      window.cancelAnimationFrame(updateTransparencySlider);
-      colorPicker.transparencyBar.slider.finishDrag();
-    }
-  }
+
   if (colorPicker.mainScreen.colorPointer.dragging) {
     window.cancelAnimationFrame(updatePointer);
     colorPicker.mainScreen.colorPointer.finishDrag();
   }
+});
+
+// For color data:
+const inputBoxes = document.querySelectorAll(".colorDataInputs");
+inputBoxes.forEach((input) => {
+  input.addEventListener("keydown", (event) => {
+    colorPicker.colorData.checkKey(event, input);
+  });
 });
