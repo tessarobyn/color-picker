@@ -104,20 +104,23 @@ export class ColorPicker {
         this.landscape,
         this.theme
       );
-      if (this.components.includes("rgb")) {
-        this.colorData.rgb();
-      }
-      if (this.components.includes("hex")) {
-        this.colorData.hex();
-      }
-      if (this.components.includes("hsl")) {
-        this.colorData.hsl();
-      }
-      if (this.components.includes("hsv")) {
-        this.colorData.hsv();
-      }
-      if (this.components.includes("cmyk")) {
-        this.colorData.cmyk();
+
+      for (let i = 0; i < this.components.length; i++) {
+        if (this.components[i] === "rgb") {
+          this.colorData.rgb();
+        }
+        if (this.components[i] === "hex") {
+          this.colorData.hex();
+        }
+        if (this.components[i] === "hsl") {
+          this.colorData.hsl();
+        }
+        if (this.components[i] === "hsv") {
+          this.colorData.hsv();
+        }
+        if (this.components[i] === "cmyk") {
+          this.colorData.cmyk();
+        }
       }
     }
   }
