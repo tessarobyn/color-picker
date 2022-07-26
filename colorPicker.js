@@ -3,12 +3,13 @@ import { MainScreen } from "/mainScreen.js";
 import { ColorBar, HueBar } from "/bars.js";
 
 export class ColorPicker {
-  constructor(container, width, height, components) {
+  constructor(container, width, height, components, theme) {
     this.container = container;
     this.h = 0;
     this.width = width;
     this.height = height;
     this.components = components;
+    this.theme = theme;
     this.calculateSizes();
   }
 
@@ -41,20 +42,6 @@ export class ColorPicker {
     }
     this.container.appendChild(this.canvas);
 
-    if (this.components.includes("transparencyBar")) {
-      this.transparencyBar = new TransparencyBar(
-        this.startx,
-        this.starty,
-        this.componentWidth / 10,
-        this.componentHeight,
-        this.ctx,
-        this.canvas
-      );
-      this.transparencyBar.draw();
-      this.transparencyBar.addSlider();
-      this.startx += this.componentWidth / 10 + this.padding;
-    }
-
     this.hueBar = new HueBar(
       this.startx,
       this.starty,
@@ -78,7 +65,7 @@ export class ColorPicker {
     this.mainScreen.draw();
     this.mainScreen.addColorPointer();
 
-    this.hueBar.addSlider(this.mainScreen);
+    this.hueBar.addSlider(this.mainScreen, this.theme);
 
     // Color bar
     if (this.components.includes("colorBar")) {
@@ -110,7 +97,8 @@ export class ColorPicker {
         this,
         this.canvas.height,
         this.canvas.width,
-        this.landscape
+        this.landscape,
+        this.theme
       );
       if (this.components.includes("rgb")) {
         this.colorData.rgb();

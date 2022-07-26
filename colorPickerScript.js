@@ -1,13 +1,29 @@
+import { Theme } from "/theme.js";
 import { ColorPicker } from "/colorPicker.js";
 
-const container = document.getElementById("colorPicker");
-container.style.backgroundColor = "#222222";
+const container = document.getElementsByClassName("colorPicker")[0];
+const arr = container.id.split(/[;:]+/);
+console.log(arr);
+const themes = ["light", "grey", "darkBlue", "dark", "black", "custom"];
+let theme;
+if (arr.includes("theme")) {
+  const t = arr[arr.indexOf("theme") + 1];
+  if (themes.includes(t)) {
+    theme = new Theme(t);
+  }
+  if (t == "custom") {
+    const colors = arr[arr.indexOf("custom") + 1].split(",");
+    theme.custom(colors[0], colors[1], colors[2]);
+  }
+}
+container.style.backgroundColor = theme.backgroundColor;
 const components = ["colorBar", "hex", "rgb", "hsl", "hsv", "cmyk"];
 const colorPicker = new ColorPicker(
   container,
   container.style.width.slice(0, container.style.width.length - 2),
   container.style.height.slice(0, container.style.height.length - 2),
-  components
+  components,
+  theme
 );
 
 // Sliders/pointer updates

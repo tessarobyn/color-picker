@@ -16,7 +16,8 @@ export class ColorData {
     colorPicker,
     canvasHeight,
     canvasWidth,
-    landscape
+    landscape,
+    theme
   ) {
     this.padding = padding + "px";
     this.container = document.createElement("div");
@@ -28,6 +29,7 @@ export class ColorData {
     this.canvasHeight = canvasHeight;
     this.canvasWidth = canvasWidth;
     this.landscape = landscape;
+    this.theme = theme;
     this.styleContainer();
   }
   styleContainer() {
@@ -62,7 +64,7 @@ export class ColorData {
     label.innerText = type;
     label.style.width = "30%";
     label.style.textAlign = "center";
-    label.style.color = "#ffffff";
+    label.style.color = this.theme.color;
     label.style.fontFamily = "'roboto',sans-serif";
     label.style.marginRight = this.padding;
     inputContainer.appendChild(label);
@@ -73,7 +75,7 @@ export class ColorData {
     input.style.boxSizing = "border-box";
     input.style.width = "100%";
     input.style.textAlign = "center";
-    input.style.color = "#ffffff";
+    input.style.color = this.theme.color;
     input.style.fontFamily = "'roboto',sans-serif";
     if (this.canvasWidth <= 200) {
       input.style.fontSize = "12px";
@@ -81,7 +83,7 @@ export class ColorData {
       input.style.fontSize = "14px";
     }
     input.style.borderStyle = "none";
-    input.style.backgroundColor = "#555555";
+    input.style.backgroundColor = this.theme.inputBackgroundColor;
     input.type = "text";
     inputContainer.appendChild(input);
 
