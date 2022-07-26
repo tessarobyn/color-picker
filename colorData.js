@@ -220,7 +220,8 @@ export class ColorData {
     }
   }
 
-  hexCheck(hex) {
+  hexCheck() {
+    let hex = this.temp;
     this.valid = true;
     if (hex[0] === "#") {
       hex = hex.slice(1, hex.length);
@@ -257,6 +258,65 @@ export class ColorData {
         }
       }
     }
+    this.temp = hex;
+  }
+
+  hslHsvCheck() {
+    this.valid = true;
+    let hsl = this.temp;
+    let percent1 = false;
+    let percent2 = false;
+
+    if (hsl.length != 3) {
+      this.valid = false;
+    } else {
+      for (let i = 0; i < hsl.length; i++) {
+        if (hsl[i].includes(" ") || hsl[i] === "") {
+          this.valid = false;
+        }
+      }
+      const sl = hsl[1].length;
+      const vl = hsl[2].length;
+      hsl[1] = hsl[1].replace("%", "");
+      hsl[2] = hsl[2].replace("%", "");
+      if (sl > hsl[1].length) {
+        percent1 = true;
+      }
+      if (vl > hsl[2].length) {
+        percent1 = true;
+      }
+      if (isNaN(hsl[0]) || isNaN(hsl[1]) || isNaN(hsl[2])) {
+        this.valid = false;
+      } else if (hsl[0] < 0 || hsl[0] > 360) {
+        this.valid = false;
+      } else if (hsl[1] < 0 || hsl[1] > 100) {
+        this.valid = false;
+      } else if (hsl[2] < 0 || hsl[2] > 100) {
+        this.valid = false;
+      }
+
+      if (this.valid) {
+        if (
+          (hsl[1] % 1 !== 0 || hsl[1] === "1" || hsl[1] === "0") &&
+          !percent1
+        ) {
+          hsl[1] *= 100;
+          hsl[1] += "%";
+        } else {
+          hsl[1] += "%";
+        }
+        if (
+          (hsl[2] % 1 !== 0 || hsl[2] === "1" || hsl[2] === "0") &&
+          !percent2
+        ) {
+          hsl[2] *= 100;
+          hsl[2] += "%";
+        } else {
+          hsl[2] += "%";
+        }
+      }
+    }
+    this.temp = hsl;
   }
 
   checkKey(event, input) {
@@ -273,13 +333,13 @@ export class ColorData {
           );
         }
       } else if (input.id === "hex") {
-        const temp = input.value;
-        this.hexCheck(temp);
+        this.temp = input.value;
+        this.hexCheck();
         if (this.valid) {
-          if (temp[0] != "#") {
-            temp = "#" + temp;
+          if (this.temp[0] != "#") {
+            this.temp = "#" + this.temp;
           }
-          this.hexValue = temp;
+          this.hexValue = this.temp;
           this.rgbValue = hexToRgb(this.hexValue);
           this.hsvValue = rgbToHsv(
             this.rgbValue[0],
@@ -288,29 +348,37 @@ export class ColorData {
           );
         }
       } else if (input.id === "hsl") {
-        this.hslValue = input.value.split(",");
-        this.rgbValue = hslToRgb(
-          this.hslValue[0],
-          this.hslValue[1],
-          this.hslValue[2]
-        );
-        this.hsvValue = rgbToHsv(
-          this.rgbValue[0],
-          this.rgbValue[1],
-          this.rgbValue[2]
-        );
+        this.temp = input.value.split(",");
+        this.hslHsvCheck();
+        if (this.valid) {
+          this.hslValue = this.temp;
+          this.rgbValue = hslToRgb(
+            this.hslValue[0],
+            this.hslValue[1],
+            this.hslValue[2]
+          );
+          this.hsvValue = rgbToHsv(
+            this.rgbValue[0],
+            this.rgbValue[1],
+            this.rgbValue[2]
+          );
+        }
       } else if (input.id === "hsv") {
-        this.hsvValue = input.value.split(",");
-        this.rgbValue = hsvToRgb(
-          this.hsvValue[0],
-          this.hsvValue[1].slice(0, -1),
-          this.hsvValue[2].slice(0, -1)
-        );
-        this.hsvValue = rgbToHsv(
-          this.rgbValue[0],
-          this.rgbValue[1],
-          this.rgbValue[2]
-        );
+        this.temp = input.value.split(",");
+        this.hslHsvCheck();
+        if (this.valid) {
+          this.hsvValue = this.temp;
+          this.rgbValue = hsvToRgb(
+            this.hsvValue[0],
+            this.hsvValue[1].slice(0, -1),
+            this.hsvValue[2].slice(0, -1)
+          );
+          this.hsvValue = rgbToHsv(
+            this.rgbValue[0],
+            this.rgbValue[1],
+            this.rgbValue[2]
+          );
+        }
       } else if (input.id === "cmyk") {
         this.cmykValue = input.value.split(",");
         for (let i = 0; i < this.cmykValue.length; i++) {
