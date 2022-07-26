@@ -2,4 +2,4 @@
 
 JavaScript color picker.
 
-Recommended minimum width/height = 100
+Recommended minimum size = 200px x 400px

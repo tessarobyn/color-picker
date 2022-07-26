@@ -1,6 +1,6 @@
 import { ColorData } from "/colorData.js";
 import { MainScreen } from "/mainScreen.js";
-import { ColorBar, HueBar, TransparencyBar } from "/bars.js";
+import { ColorBar, HueBar } from "/bars.js";
 
 export class ColorPicker {
   constructor(container, width, height, components) {
@@ -19,6 +19,7 @@ export class ColorPicker {
     this.canvas = document.createElement("canvas");
     if (parseInt(this.width) > parseInt(this.height)) {
       this.landscape = true;
+      this.container.style.display = "flex";
       this.canvas.height = this.height;
       this.componentHeight = this.height - this.padding * 2;
       this.canvas.width = this.componentWidth =
@@ -72,8 +73,7 @@ export class ColorPicker {
       this.componentHeight,
       0,
       this.ctx,
-      this.canvas,
-      this
+      this.canvas
     );
     this.mainScreen.draw();
     this.mainScreen.addColorPointer();
@@ -107,8 +107,10 @@ export class ColorPicker {
       this.colorData = new ColorData(
         this.container,
         this.padding,
-        this.mainScreen.colorPointer,
-        this.canvas.height
+        this,
+        this.canvas.height,
+        this.canvas.width,
+        this.landscape
       );
       if (this.components.includes("rgb")) {
         this.colorData.rgb();

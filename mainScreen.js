@@ -1,8 +1,8 @@
 import { hsvToRgb } from "/colorConversions.js";
-import { ColorPointer } from "./dragComponents.js";
+import { ColorPointer } from "/dragComponents.js";
 
 export class MainScreen {
-  constructor(x, y, width, height, h, ctx, canvas, colorPicker) {
+  constructor(x, y, width, height, h, ctx, canvas) {
     this.startx = x;
     this.starty = y;
     this.width = width;
@@ -10,7 +10,6 @@ export class MainScreen {
     this.hue = h;
     this.ctx = ctx;
     this.canvas = canvas;
-    this.colorPicker = colorPicker;
   }
   draw() {
     // Low resolution = faster rendering speeds
@@ -70,8 +69,7 @@ export class MainScreen {
       this.height,
       this.ctx,
       this.canvas,
-      this.hue,
-      this.colorPicker
+      this.hue
     );
     this.colorPointer.draw();
   }
@@ -82,6 +80,5 @@ export class MainScreen {
     this.ctx.clearRect(this.startx, this.starty, this.width, this.height);
     this.draw();
     this.colorPointer.draw();
-    this.colorPicker.colorBar.update();
   }
 }
