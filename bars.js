@@ -8,9 +8,6 @@ class Bars {
     this.height = height;
     this.ctx = ctx;
     this.canvas = canvas;
-    // Only applicable to transparency bar:
-    this.rgb = rgb;
-    this.colorPointer = colorPointer;
   }
 }
 
