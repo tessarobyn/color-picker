@@ -9,6 +9,8 @@ export class ColorPicker {
     this.width = width;
     this.height = height;
     this.components = components;
+    this.updateHueSlider;
+    this.updatePointer;
     this.calculateSizes();
   }
 
