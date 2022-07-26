@@ -120,7 +120,6 @@ export function rgbToCmyk(r, g, b) {
 
 export function hexToRgb(hex) {
   hex = hex.slice(1).toUpperCase();
-  console.log(hex);
   const hexSplit = [];
   if (hex.length === 3) {
     for (let i = 0; i < hex.length; i++) {
@@ -217,10 +216,10 @@ export function hsvToRgb(h, s, v) {
 }
 
 export function cmykToRgb(c, m, y, k) {
-  console.log(c, m, y, k);
   let rgb = [];
   rgb.push(255 * (1 - c) * (1 - k));
   rgb.push(255 * (1 - m) * (1 - k));
   rgb.push(255 * (1 - y) * (1 - k));
+  console.log(rgb);
   return rgb;
 }

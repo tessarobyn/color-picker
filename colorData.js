@@ -319,6 +319,31 @@ export class ColorData {
     this.temp = hsl;
   }
 
+  cmykCheck() {
+    this.valid = true;
+    let cmyk = this.temp;
+    for (let i = 0; i < cmyk.length; i++) {
+      let len = cmyk[i].length;
+      cmyk[i] = cmyk[i].replace("%", "");
+      if (len > cmyk[i].length) {
+        cmyk[i] = cmyk[i] / 100;
+      }
+      if (isNaN(cmyk[i])) {
+        this.valid = false;
+        console.log("false 1");
+      } else if (String(cmyk[i]).includes(" ") || cmyk[i] === "") {
+        this.valid = false;
+        console.log("false 2");
+      } else {
+        if (0 > cmyk[i] || cmyk[i] > 1) {
+          this.valid = false;
+          console.log("false 3");
+        }
+      }
+    }
+    this.temp = cmyk;
+  }
+
   checkKey(event, input) {
     if (event.key === "Enter") {
       if (input.id === "rgb") {
@@ -380,21 +405,26 @@ export class ColorData {
           );
         }
       } else if (input.id === "cmyk") {
-        this.cmykValue = input.value.split(",");
-        for (let i = 0; i < this.cmykValue.length; i++) {
-          this.cmykValue[i] = this.cmykValue[i].slice(0, -1) / 100;
+        this.temp = input.value.split(",");
+        this.cmykCheck();
+        if (this.valid) {
+          this.cmykValue = this.temp;
+          for (let i = 0; i < this.cmykValue.length; i++) {
+            this.cmykValue[i] = parseFloat(this.cmykValue[i]);
+          }
+          console.log(this.cmykValue);
+          this.rgbValue = cmykToRgb(
+            this.cmykValue[0],
+            this.cmykValue[1],
+            this.cmykValue[2],
+            this.cmykValue[3]
+          );
+          this.hsvValue = rgbToHsv(
+            this.rgbValue[0],
+            this.rgbValue[1],
+            this.rgbValue[2]
+          );
         }
-        this.rgbValue = cmykToRgb(
-          this.cmykValue[0],
-          this.cmykValue[1],
-          this.cmykValue[2],
-          this.cmykValue[3]
-        );
-        this.hsvValue = rgbToHsv(
-          this.rgbValue[0],
-          this.rgbValue[1],
-          this.rgbValue[2]
-        );
       }
       if (this.valid) {
         this.colorPicker.mainScreen.update(this.hsvValue[0]);
