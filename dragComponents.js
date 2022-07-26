@@ -28,7 +28,8 @@ export class Slider extends DragComponents {
     container,
     containerY,
     containerHeight,
-    mainScreen
+    mainScreen,
+    theme
   ) {
     super();
     this.x = x;
@@ -42,6 +43,7 @@ export class Slider extends DragComponents {
     this.containerY = containerY;
     this.containerHeight = containerHeight;
     this.mainScreen = mainScreen;
+    this.theme = theme;
     this.dragging = false;
   }
 
@@ -52,7 +54,7 @@ export class Slider extends DragComponents {
     this.hue = (this.center / this.containerHeight) * 360;
     this.ctx.fillStyle = "hsl(" + this.hue + ",100%,50%)";
     this.ctx.fill(rectangle);
-    this.ctx.strokeStyle = "#ffffff";
+    this.ctx.strokeStyle = this.theme.color;
     this.ctx.stroke(rectangle);
   }
 
