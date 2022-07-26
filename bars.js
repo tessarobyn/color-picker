@@ -26,7 +26,7 @@ export class HueBar extends Bars {
       y += 1;
     }
   }
-  addSlider(mainScreen) {
+  addSlider(mainScreen, theme) {
     this.slider = new Slider(
       this.x - 4.5,
       this.y - 4.5,
@@ -37,7 +37,8 @@ export class HueBar extends Bars {
       this,
       this.y,
       this.height,
-      mainScreen
+      mainScreen,
+      theme
     );
     this.slider.draw();
   }
