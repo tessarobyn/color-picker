@@ -23,12 +23,16 @@ export class ColorPicker {
       this.container.style.display = "flex";
       this.canvas.height = this.height;
       this.canvas.width = this.height;
-      this.componentHeight = this.height - this.padding * 2 - this.height / 5;
       this.componentWidth = this.canvas.width;
-      this.dataStartX = this.padding;
-      this.dataStartY = this.componentHeight + this.padding * 2;
-      this.dataWidth = this.componentWidth - this.padding * 2;
-      this.dataHeight = this.height / 5 - this.padding;
+      if (this.colorBar) {
+        this.componentHeight = this.height - this.padding * 2 - this.height / 5;
+        this.dataStartX = this.padding;
+        this.dataStartY = this.componentHeight + this.padding * 2;
+        this.dataWidth = this.componentWidth - this.padding * 2;
+        this.dataHeight = this.height / 5 - this.padding;
+      } else {
+        this.componentHeight = this.height - this.padding * 2;
+      }
     } else {
       this.landscape = false;
       this.canvas.width = this.componentWidth = this.width;
@@ -37,9 +41,12 @@ export class ColorPicker {
       this.dataStartY = this.componentHeight + this.padding * 2;
       this.dataStartX = this.startx;
       this.dataWidth = this.componentWidth - this.padding * 2;
-      this.dataHeight =
-        (this.height - this.componentHeight - this.padding * 3) / 4;
-      this.canvas.height = this.componentHeight + this.dataHeight;
+      this.dataHeight = this.componentHeight / 3;
+      if (this.components.includes("colorBar")) {
+        this.canvas.height = this.componentHeight + this.dataHeight;
+      } else {
+        this.canvas.height = this.componentHeight;
+      }
     }
     if (this.canvas.getContext) {
       this.ctx = this.canvas.getContext("2d");
