@@ -2,8 +2,8 @@ import { Theme } from "/theme.js";
 import { ColorPicker } from "/colorPicker.js";
 
 const container = document.getElementsByClassName("colorPicker")[0];
-const arr = container.id.split(/[;:]+/);
-console.log(arr);
+const id = container.id.replace(/\s/g, "");
+const arr = id.split(/[;:]+/);
 const themes = ["light", "grey", "darkBlue", "dark", "black", "custom"];
 let theme;
 if (arr.includes("theme")) {
@@ -15,9 +15,16 @@ if (arr.includes("theme")) {
     const colors = arr[arr.indexOf("custom") + 1].split(",");
     theme.custom(colors[0], colors[1], colors[2]);
   }
+} else {
+  theme = new Theme("dark");
 }
+
+let components = ["colorBar", "rgb", "hex", "hsl", "hsv", "cmyk"];
+if (arr.includes("features")) {
+  components = arr[arr.indexOf("features") + 1].split(",");
+}
+
 container.style.backgroundColor = theme.backgroundColor;
-const components = ["colorBar", "hex", "rgb", "hsl", "hsv", "cmyk"];
 const colorPicker = new ColorPicker(
   container,
   container.style.width.slice(0, container.style.width.length - 2),
