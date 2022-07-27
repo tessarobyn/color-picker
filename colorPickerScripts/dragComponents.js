@@ -1,5 +1,5 @@
-import { hsvToRgb } from "/colorConversions.js";
-import { mouseDown } from "/mouseFunctions.js";
+import { hsvToRgb } from "./colorConversions.js";
+import { mouseDown } from "./mouseFunctions.js";
 
 class DragComponents {
   constructor() {}
