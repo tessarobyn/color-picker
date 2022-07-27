@@ -1,5 +1,5 @@
-import { Theme } from "/theme.js";
-import { ColorPicker } from "/colorPicker.js";
+import { Theme } from "./theme.js";
+import { ColorPicker } from "./colorPicker.js";
 
 const container = document.getElementsByClassName("colorPicker")[0];
 const id = container.id.replace(/\s/g, "");
