@@ -360,7 +360,7 @@ export class ColorData {
           );
         }
       } else if (input.id === "hex") {
-        this.temp = input.value;
+        this.temp = input.value.toUpperCase();
         this.hexCheck();
         if (this.valid) {
           if (this.temp[0] != "#") {
