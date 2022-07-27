@@ -2,6 +2,8 @@
 
 JavaScript color picker designed to make it easy to add a color picker to your website.
 
+For feature docs and help, go to the project's site [here](https://tessarobyn.github.io/color-picker/)
+
 Recommended minimum dimensions for the color picker = 200px x 400px
 
 ## Setup
