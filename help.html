@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JavaScript Color Picker</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="featuresStyle.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="svg">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <path
+          id="svgWave"
+          fill="#ff0000"
+          fill-opacity="1"
+          d="M0,288L60,288C120,288,240,288,360,245.3C480,203,600,117,720,101.3C840,85,960,139,1080,149.3C1200,160,1320,128,1380,112L1440,96L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"
+        ></path>
+      </svg>
+    </div>
+    <div class="section1">
+      <div class="navbar">
+        <ul>
+          <li class="home"><a href="index.html">Color Picker</a></li>
+
+          <li><a href="help.html">Help</a></li>
+          <li><a href="setup.html">Setup</a></li>
+          <li><a href="features.html">Features</a></li>
+        </ul>
+      </div>
+      <div class="intro">
+        <div class="container">
+          <div class="colorPicker" style="width: 250px; height: 450px"></div>
+          <h4>Need to setup the color picker?</h4>
+          <button class="setupButton">Go to setup</button>
+        </div>
+        <div class="content">
+          <h1>Help</h1>
+          <p>If your color picker isn't working, follow these steps. If it is a technical issue and these steps don't fix it, create an issue on this project's GitHub repository. If it doesn't look how you would like, try changing the dimensions - the suggested minimum size is 200px x 400px.</p>
+          <ol>
+            <li>
+              Ensure you are running a server that doesn't come up with a CORS
+              error. You can check the console to see if this is the issue.
+            </li>
+            <li>
+                <p>
+                    Check you have linked the script as shown below and that it is
+                    underneath the div for the color picker (e.g. in the footer).
+                    <p>
+                      <span class="code"
+                        >&lsaquo;script type="module"
+                        src="colorPickerScript.js"&rsaquo;&lsaquo;/script&rsaquo;</span
+                      >
+                    </p>
+                </p>
+            </li>
+            <li>
+              Check you have added the div correctly as shown below. Note it is
+              case-sensitive.
+              <p>
+                <span class="code"
+                  >&lsaquo;div class="colorPicker" style="width:
+                  <b>[add width in px here]</b>; height:
+                  <b>[add height in px here]</b
+                  >"&rsaquo;&lsaquo;/div&rsaquo;</span
+                >
+              </p>
+              With actual dimensions added, it should look like this:
+              <p>
+                <span class="code"
+                  >&lsaquo;div class="colorPicker" style="width: <b>250px</b>;
+                  height: <b>450px</b>"&rsaquo;&lsaquo;/div&rsaquo;</span
+                >
+              </p>
+            </li>
+            <li>
+                If you have added custom features, ensure you have spelt them correctly and note all feature names are case-sensitive. 
+                They should be added as an id for the div you created. If you aren't sure how to format the id for custom features,
+                look at this example for a light theme with a colorBar, hex and rgb:
+                <p><span class="code"
+                    >id="theme:<b>light</b>; components:<b>colorBar,hex,rgb</b>"</span
+                  ></p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </body>
+  <footer>
+    <script type="module" src="colorPickerScript.js"></script>
+    <script src="websiteScript.js"></script>
+  </footer>
+</html>
