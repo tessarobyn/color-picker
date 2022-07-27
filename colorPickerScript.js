@@ -20,8 +20,8 @@ if (arr.includes("theme")) {
 }
 
 let components = ["colorBar", "rgb", "hex", "hsl", "hsv", "cmyk"];
-if (arr.includes("features")) {
-  components = arr[arr.indexOf("features") + 1].split(",");
+if (arr.includes("components")) {
+  components = arr[arr.indexOf("components") + 1].split(",");
 }
 
 container.style.backgroundColor = theme.backgroundColor;
