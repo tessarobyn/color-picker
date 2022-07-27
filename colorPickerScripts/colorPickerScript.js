@@ -1,5 +1,5 @@
-import { Theme } from "/theme.js";
-import { ColorPicker } from "/colorPicker.js";
+import { Theme } from "./theme.js";
+import { ColorPicker } from "./colorPicker.js";
 
 const container = document.getElementsByClassName("colorPicker")[0];
 const id = container.id.replace(/\s/g, "");
@@ -20,8 +20,8 @@ if (arr.includes("theme")) {
 }
 
 let components = ["colorBar", "rgb", "hex", "hsl", "hsv", "cmyk"];
-if (arr.includes("features")) {
-  components = arr[arr.indexOf("features") + 1].split(",");
+if (arr.includes("components")) {
+  components = arr[arr.indexOf("components") + 1].split(",");
 }
 
 container.style.backgroundColor = theme.backgroundColor;

@@ -1,5 +1,5 @@
-import { hsvToRgb } from "/colorConversions.js";
-import { ColorPointer } from "/dragComponents.js";
+import { hsvToRgb } from "./colorConversions.js";
+import { ColorPointer } from "./dragComponents.js";
 
 export class MainScreen {
   constructor(x, y, width, height, h, ctx, canvas) {

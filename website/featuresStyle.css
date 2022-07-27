@@ -1,0 +1,54 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  margin-top: 7.5%;
+  position: fixed;
+  left: 10%;
+}
+
+.content {
+  position: absolute;
+  width: 50%;
+  right: 10%;
+  top: 30%;
+  z-index: -3;
+}
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(1, 50px), repeat(6, 1fr);
+  row-gap: 10px;
+  column-gap: 10px;
+}
+
+.themes img {
+  height: 300px;
+}
+
+.code {
+  font-family: monospace, "Courier New", Courier;
+  background-color: #eeeeee;
+}
+
+.components {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  row-gap: 10px;
+  column-gap: 10px;
+}
+
+.components > div > p {
+  text-align: center;
+}
+
+.components img {
+  margin-left: 12.5%;
+  width: 75%;
+}

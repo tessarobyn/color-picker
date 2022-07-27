@@ -1,6 +1,6 @@
-import { ColorData } from "/colorData.js";
-import { MainScreen } from "/mainScreen.js";
-import { ColorBar, HueBar } from "/bars.js";
+import { ColorData } from "./colorData.js";
+import { MainScreen } from "./mainScreen.js";
+import { ColorBar, HueBar } from "./bars.js";
 
 export class ColorPicker {
   constructor(container, width, height, components, theme) {
